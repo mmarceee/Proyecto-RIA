@@ -2,6 +2,8 @@
     import { useRoute } from 'vue-router'
     import { ref, onMounted, computed } from 'vue'
     import { getGameById } from '@/services/gameService'
+    import LoadingState from '@/components/LoadingState.vue'
+    import ErrorState from '@/components/ErrorState.vue'
 
     const route = useRoute()
     const gameId = route.params.id
@@ -43,8 +45,8 @@
 
 <template>
     <section class="game-detail">
-        <div class="game-detail__loading" v-if="cargando">Cargando detalles del juego...</div>
-        <div class="game-detail__error" v-else-if="error">{{ error }}</div>
+        <LoadingState v-if="cargando" message="Cargando detalles del juego..." />
+        <ErrorState v-else-if="error" :message="error" />
         <div v-else-if="game">
             <h1 class="game-detail__title">Detalles del Juego</h1>
             <p class="game-detail__name">{{ game.name }}</p>
