@@ -38,8 +38,9 @@
 
 <style scoped>
 
-li{
-    list-style: none;
+.games-view__item {
+  list-style: none;
 }
+
 
 </style>

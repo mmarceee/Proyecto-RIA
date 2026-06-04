@@ -24,19 +24,19 @@
 
     // Computed para mostrar los nombres de los géneros
     const genreNames = computed(() => {
-    if (!game.value?.genres?.length) { //el ?: Si game.value existe, intentá acceder a genres. Si no existe, no rompe.
-        return 'Sin información'
-    }
+        if (!game.value?.genres?.length) { //el value?.genres : Si game.value existe, intentá acceder a genres. Si no existe, no rompe. (optional chaining)
+            return 'Sin información'        // Y si todo eso es falso, osea no hay géneros disponibles, devolvé 'Sin información'.
+        }
 
-    return game.value.genres.map((genre) => genre.name).join(', ')
+        return game.value.genres.map((genre) => genre.name).join(', ')
     })
 
     const platformNames = computed(() => {
-    if (!game.value?.platforms?.length) {
-        return 'Sin información'
-    }
+        if (!game.value?.platforms?.length) {
+            return 'Sin información'
+        }
     
-    return game.value.platforms.map((item) => item.platform.name).join(', ')
+        return game.value.platforms.map((item) => item.platform.name).join(', ')
     })
 
 </script>
@@ -45,15 +45,22 @@
     <section class="game-detail">
         <div class="game-detail__loading" v-if="cargando">Cargando detalles del juego...</div>
         <div class="game-detail__error" v-else-if="error">{{ error }}</div>
-        <div v-else-if ="game">
+        <div v-else-if="game">
             <h1 class="game-detail__title">Detalles del Juego</h1>
             <p class="game-detail__name">{{ game.name }}</p>
             <img 
+                class="game-detail__image"
                 v-if="game.background_image"
                 :src="game.background_image" 
                 :alt="game.name"
             />
-            <p class="game-detail__description">{{ game.description_raw }}</p>
+            <div v-else class="game-detail__placeholder">
+                Sin imagen
+            </div>
+            <p class="game-detail__description" v-if="game.description_raw">{{ game.description_raw }}</p>
+            <div v-else class="game-detail__placeholder">
+                Sin descripción
+            </div>
             <p class="game-detail__rating">Calificación: {{ game.rating }}</p>
             <p class="game-detail__released">Lanzamiento: {{ game.released }}</p>
             <p class="game-detail__platforms">Plataformas: {{ platformNames}}</p>
