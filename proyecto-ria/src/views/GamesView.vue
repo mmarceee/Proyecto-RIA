@@ -1,4 +1,5 @@
 <script setup>
+    import GameCard from '@/components/GameCard.vue'
     import { ref, onMounted } from 'vue'
     import { getGames } from '@/services/gameService'
 
@@ -29,10 +30,16 @@
         <div class="games-view__error" v-else-if="error">{{ error }}</div>
         <ul class="games-view__list" v-else>
             <li class="games-view__item" v-for="juego in juegos" :key="juego.id">
-                {{ juego.name }}
+                <GameCard :game="juego" />
             </li>
         </ul>
     </section>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+li{
+    list-style: none;
+}
+
+</style>
