@@ -4,12 +4,15 @@
     import { getGameById } from '@/services/gameService'
     import LoadingState from '@/components/LoadingState.vue'
     import ErrorState from '@/components/ErrorState.vue'
+    import { useFavoriteStore } from '@/stores/favoriteStore'
 
     const route = useRoute()
     const gameId = route.params.id
     const game = ref(null)
     const cargando = ref(false)
     const error = ref(null)
+
+    const favoriteStore = useFavoriteStore()
 
     onMounted(async () => {
         cargando.value = true
@@ -41,6 +44,15 @@
         return game.value.platforms.map((item) => item.platform.name).join(', ')
     })
 
+    const isCurrentGameFavorite = computed(() => {
+        if (!game.value){
+            return false
+        }
+
+        return favoriteStore.isFavorite(game.value.id)
+    })
+
+
 </script>
 
 <template>
@@ -50,6 +62,9 @@
         <div v-else-if="game">
             <h1 class="game-detail__title">Detalles del Juego</h1>
             <p class="game-detail__name">{{ game.name }}</p>
+            <button @click="favoriteStore.marcarDesmarcarFavorito(game)" class="game-detail__favorite-button" type="button"> 
+                {{ isCurrentGameFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos' }} 
+            </button>
             <img 
                 class="game-detail__image"
                 v-if="game.background_image"
