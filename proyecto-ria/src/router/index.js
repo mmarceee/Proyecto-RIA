@@ -52,7 +52,7 @@ const router = createRouter({
 const appName = import.meta.env.VITE_APP_NAME || 'ChickenThiefGames'
 
 router.afterEach((to) => {
-  document.title = to.meta.title ? `${to.meta.title} · ${appName}` : appName
+  document.title = to.meta.title ? `${to.meta.title} - ${appName}` : appName
 })
 
 
