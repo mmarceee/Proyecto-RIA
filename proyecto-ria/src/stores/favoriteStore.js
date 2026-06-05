@@ -1,25 +1,13 @@
 import { defineStore } from 'pinia';
+import { useLocalStorage } from '@/composables/useLocalStorage';
+
+
 const FAVORITES_STORAGE_KEY = 'favorite-games'
-
-function loadFavorites(){
-  let storedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY)
-
-  if(!storedFavorites){
-    return []
-  }
-
-  return JSON.parse(storedFavorites) //JSON.stringify(array) para guardar. y JSON.parse(texto) para recuperar.
-}
-
-function saveFavorites(favorites){
-  localStorage.setItem(FAVORITES_STORAGE_KEY, 
-  JSON.stringify(favorites)) //Eso transforma el array en un string
-}
-
+const favoritesStorage = useLocalStorage(FAVORITES_STORAGE_KEY, [])
 
 export const useFavoriteStore = defineStore('favorites', {
   state: () => ({
-    favorites: loadFavorites(),
+    favorites: favoritesStorage.data.value
     }),
 
     actions: {
@@ -37,13 +25,13 @@ export const useFavoriteStore = defineStore('favorites', {
             }
 
             this.favorites.push(addGame);
-            saveFavorites(this.favorites)
+            favoritesStorage.save(this.favorites)
           }
 
         },
         removeFavorite(gameId) {
           this.favorites = this.favorites.filter((favorite) => favorite.id !== gameId );
-          saveFavorites(this.favorites)
+          favoritesStorage.save(this.favorites)
         },
 
         isFavorite(gameId) {

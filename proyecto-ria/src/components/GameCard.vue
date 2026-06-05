@@ -1,12 +1,20 @@
 <script setup> 
 
 import { RouterLink } from 'vue-router'
+import { computed } from 'vue'
+import { useFavoriteStore } from '@/stores/favoriteStore'
 
-defineProps({
+const favoriteStore = useFavoriteStore()
+
+const props = defineProps({
     game:{
         type: Object,
         required: true
-    }
+    },
+})
+
+const isGameFavorite = computed(() => {
+    return favoriteStore.isFavorite(props.game.id)
 })
 
 </script>
@@ -27,6 +35,9 @@ defineProps({
         <p class="game-card__rating">Calificación: {{ game.rating }}</p>
         <p class="game-card__released">Lanzamiento: {{ game.released }}</p>
         </RouterLink>
+        <button type="button" @click="favoriteStore.marcarDesmarcarFavorito(game)" class="game-card__favorite-button" :class="{ 'game-card__favorite-button--active': isGameFavorite }">
+            {{ isGameFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos' }}
+        </button>
     </article>
 </template>
 
