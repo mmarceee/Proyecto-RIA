@@ -1,11 +1,18 @@
-<script setup></script>
+<script setup>
+  import { RouterLink, RouterView } from 'vue-router'
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
-</template>
+  <header class="app-header">
+    <nav class="app-header__nav">
+      <RouterLink class="app-header__link" to="/"> Inicio </RouterLink>
+      <RouterLink class="app-header__link" to="/games"> Juegos </RouterLink>
+      <RouterLink class="app-header__link" to="/favorites"> Favoritos </RouterLink>
+      <RouterLink class="app-header__link" to="/settings"> Configuración </RouterLink>
+    </nav>
+  </header>
 
-<style scoped></style>
+  <main class="app-main">
+    <RouterView />
+  </main>
+</template>
