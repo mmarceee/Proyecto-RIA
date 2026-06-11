@@ -10,28 +10,32 @@
     const cargando = ref(false);
     const error = ref(null);
     const { data: search, save: saveSearch } = useSessionStorage('games_search', '');
+    const currentPage = ref(1);
 
     let temporizador = null;
 
+    async function fetchCurrentGames() {
+        cargando.value = true;
+        error.value = null;
+
+        try {
+            const games = await getGames(search.value, currentPage.value);
+            juegos.value = games;
+        } catch (err) {
+            error.value = 'Error al cargar los juegos';
+            console.error(err);
+        } finally {
+            cargando.value = false;
+        }
+    }
     function handleSearch() {
         clearTimeout(temporizador);
 
         temporizador = setTimeout(async () => {
-
-            cargando.value = true;
-            error.value = null;
-
             saveSearch(search.value);
-
-            try {
-                const games = await getGames(search.value);
-                juegos.value = games;
-            } catch (err) {
-                error.value = 'Error al buscar los juegos';
-            } finally {
-                cargando.value = false;
-            }
-        }, 300); //500 milisegundos
+            currentPage.value = 1; // Reiniciar a la primera página al realizar una nueva
+            fetchCurrentGames();
+        }, 300); //300 milisegundos
     }
     onMounted(async () => {
         cargando.value = true;
@@ -47,6 +51,18 @@
             cargando.value = false;
         }
     });
+
+    function nextPage() {
+        currentPage.value += 1;
+        fetchCurrentGames();
+    }
+
+    function prevPage() {
+        if (currentPage.value > 1) {
+            currentPage.value -= 1;
+            fetchCurrentGames();
+        }
+    }
 </script>
 
 <template>
@@ -67,6 +83,22 @@
                 <GameCard :game="juego" />
             </li>
         </ul>
+        <div class="games-view__pagination">
+            <button 
+                class="games-view__page-button" 
+                @click="prevPage" 
+                :disabled="currentPage === 1">
+                Anterior
+            </button>
+            
+            <span class="games-view__page-indicator">Página {{ currentPage }}</span>
+            
+            <button 
+                class="games-view__page-button" 
+                @click="nextPage">
+                Siguiente
+            </button>
+        </div>
     </section>
 </template>
 

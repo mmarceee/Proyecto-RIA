@@ -62,7 +62,7 @@
         <div v-else-if="game">
             <h1 class="game-detail__title">Detalles del Juego</h1>
             <p class="game-detail__name">{{ game.name }}</p>
-            <button @click="favoriteStore.marcarDesmarcarFavorito(game)" class="game-detail__favorite-button" type="button"> 
+            <button @click="favoriteStore.marcarDesmarcarFavorito(game)" class="game-detail__favorite-button--active" type="button"> 
                 {{ isCurrentGameFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos' }} 
             </button>
             <img 
