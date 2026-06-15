@@ -166,7 +166,7 @@
                 @input="handleSearch"
                 @keyup.enter="confirmarBusqueda"
                 @focus="showSearchHistory = true"
-                >
+            >
 
             <button
                 type="button"
