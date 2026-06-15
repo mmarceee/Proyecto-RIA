@@ -6,6 +6,12 @@
 
   const settingsStore = useSettingsStore()
 
+  // Alternar entre tema claro y oscuro
+  function toggleTheme() {
+    const nextTheme = settingsStore.theme === 'theme-light' ? 'theme-dark' : 'theme-light'
+    settingsStore.setTheme(nextTheme)
+  }
+
   // Aplicar el tema configurado al iniciar la aplicación
   onMounted(() => {
     settingsStore.applyTheme(settingsStore.theme)
@@ -14,6 +20,19 @@
 
 <template>
   <header class="app-header">
+    <!-- Interruptor de Tema Deslizante (Sol y Luna) -->
+    <button 
+      class="theme-toggle" 
+      :class="{ 'theme-toggle--light': settingsStore.theme === 'theme-light' }"
+      @click="toggleTheme"
+      :aria-label="settingsStore.theme === 'theme-light' ? 'Activar modo oscuro' : 'Activar modo claro'"
+      type="button"
+    >
+      <span class="theme-toggle__icon theme-toggle__icon--moon">🌙</span>
+      <span class="theme-toggle__icon theme-toggle__icon--sun">☀️</span>
+      <span class="theme-toggle__knob"></span>
+    </button>
+
     <div class="app-header__brand">
       <div class="app-header__logo-container">
         <img class="app-header__logo-img" :src="logoHead" alt="ChickenThief Games Logo" />
