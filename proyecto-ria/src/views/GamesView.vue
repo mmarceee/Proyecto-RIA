@@ -10,7 +10,11 @@
     const cargando = ref(false);
     const error = ref(null);
     const { data: search, save: saveSearch } = useSessionStorage('games_search', '');
-    const currentPage = ref(1);
+    const { data: storedPage, save: savePage } = useSessionStorage('games_page', '1');
+    const initialPage = parseInt(storedPage.value);
+    const currentPage = ref(Number.isNaN(initialPage) || initialPage < 1 ? 1 : initialPage);
+    const searchHistory = ref(loadSearchHistory());
+    const showSearchHistory = ref(false);
 
     let temporizador = null;
 
@@ -34,34 +38,30 @@
         temporizador = setTimeout(async () => {
             saveSearch(search.value);
             currentPage.value = 1; // Reiniciar a la primera página al realizar una nueva
+            savePage('1')
             fetchCurrentGames();
         }, 300); //300 milisegundos
     }
-    onMounted(async () => {
-        cargando.value = true;
-        error.value = null;
-
-        try {
-            const games = await getGames();
-            juegos.value = games;
-        } catch (err) {
-            error.value = 'Error al cargar los juegos';
-            console.error(err);
-        } finally {
-            cargando.value = false;
-        }
-    });
+    onMounted(() => {
+        fetchCurrentGames()
+    })
 
     function nextPage() {
         currentPage.value += 1;
+        savePage(currentPage.value.toString())
         fetchCurrentGames();
     }
 
     function prevPage() {
         if (currentPage.value > 1) {
             currentPage.value -= 1;
+            savePage(currentPage.value.toString())
             fetchCurrentGames();
         }
+    }
+
+    function loadSearchHistory(){
+        
     }
 </script>
 
