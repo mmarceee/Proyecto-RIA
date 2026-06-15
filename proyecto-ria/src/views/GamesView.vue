@@ -11,6 +11,8 @@
     const error = ref(null);
     const { data: search, save: saveSearch } = useSessionStorage('games_search', '');
     const currentPage = ref(1);
+    const selectedPlatforms = ref('');
+    const selectedGenres = ref('');
 
     let temporizador = null;
 
@@ -19,7 +21,7 @@
         error.value = null;
 
         try {
-            const games = await getGames(search.value, currentPage.value);
+            const games = await getGames(search.value, currentPage.value, selectedPlatforms.value, selectedGenres.value);
             juegos.value = games;
         } catch (err) {
             error.value = 'Error al cargar los juegos';
@@ -63,11 +65,34 @@
             fetchCurrentGames();
         }
     }
+
+    function handleFilterChange() {
+        currentPage.value = 1; // Reiniciar a la primera página al cambiar filtros
+        fetchCurrentGames();
+    }
 </script>
 
 <template>
     <section class="games-view">
         <h1 class="games-view__title">Juegos</h1>
+        <div class="games-view__filters">
+            <p class="games-view__filter-label">Filtrar por:</p>
+            <select v-model="selectedPlatform" @change="handleFilterChange" class="games-view__filter-select">
+                <option value="">Todas las plataformas</option>
+                <option value="4">PC</option>
+                <option value="187">PlayStation 5</option>
+                <option value="18">PlayStation 4</option>
+                <option value="1">Xbox One</option>
+            </select>
+
+            <select v-model="selectedGenre" @change="handleFilterChange" class="games-view__filter-select">
+                <option value="">Todos los géneros</option>
+                <option value="action">Acción</option>
+                <option value="role-playing-games">RPG</option>
+                <option value="shooter">Shooter</option>
+                <option value="adventure">Aventura</option>
+            </select>
+        </div>
         <input 
             type="text"
             placeholder="Buscar Juegos..."
