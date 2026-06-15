@@ -3,7 +3,7 @@ const apiKey = import.meta.env.VITE_RAWG_API_KEY;
 const baseUrl = import.meta.env.VITE_RAWG_API_BASE_URL || 'https://api.rawg.io/api';
 const pageSize = import.meta.env.VITE_RAWG_PAGE_SIZE || 20;
 
-export async function getGames (search = '', page = 1) {
+export async function getGames (search = '', page = 1, platforms = '', genres = '') {
     
     validarApiKey();
     
@@ -15,6 +15,14 @@ export async function getGames (search = '', page = 1) {
 
     if(search){
         url.searchParams.set('search', search)
+    }
+
+    if(platforms){
+        url.searchParams.set('platforms', platforms)
+    }
+
+    if(genres){
+        url.searchParams.set('genres', genres)
     }
 
     const response = await fetch(url);

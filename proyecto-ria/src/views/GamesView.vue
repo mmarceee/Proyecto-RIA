@@ -11,12 +11,17 @@
     const juegos = ref([]);
     const cargando = ref(false);
     const error = ref(null);
+
     const { data: search, save: saveSearch } = useSessionStorage('games_search', '');
     const { data: storedPage, save: savePage } = useSessionStorage('games_page', '1');
+    const { data: selectedPlatforms, save: saveSelectedPlatforms } = useSessionStorage('games_platforms', '');
+    const { data: selectedGenres, save: saveSelectedGenres } = useSessionStorage('games_genres', '');
+
     const initialPage = parseInt(storedPage.value);
     const currentPage = ref(Number.isNaN(initialPage) || initialPage < 1 ? 1 : initialPage); 
     const searchHistory = ref(cargarHistorialBusquedas());
     const showSearchHistory = ref(false);
+
     let temporizador = null;
 
     async function fetchCurrentGames() {
@@ -24,7 +29,7 @@
         error.value = null;
 
         try {
-            const games = await getGames(search.value, currentPage.value);
+            const games = await getGames(search.value, currentPage.value, selectedPlatforms.value, selectedGenres.value);
             juegos.value = games;
         } catch (err) {
             error.value = 'Error al cargar los juegos';
@@ -121,25 +126,56 @@
         showSearchHistory.value = false;
         fetchCurrentGames();
     }
+
+    function handleFilterChange() {
+        currentPage.value = 1; // Reiniciar a la primera página al cambiar filtros
+        saveSelectedPlatforms(selectedPlatforms.value);
+        saveSelectedGenres(selectedGenres.value);
+        savePage('1');
+        fetchCurrentGames();
+    }
 </script>
 
 <template>
     <section class="games-view">
         <h1 class="games-view__title">Juegos</h1>
-        <input 
-            type="text"
-            placeholder="Buscar Juegos..."
-            v-model="search"
-            @input="handleSearch"
-            @keyup.enter="confirmarBusqueda"
-            @focus="showSearchHistory = true">
+        <div class="games-view__filters">
+            <p class="games-view__filter-label">Filtrar por:</p>
+            <select v-model="selectedPlatforms" @change="handleFilterChange" class="games-view__filter-select">
+                <option value="">Todas las plataformas</option>
+                <option value="4">PC</option>
+                <option value="187">PlayStation 5</option>
+                <option value="18">PlayStation 4</option>
+                <option value="1">Xbox One</option>
+            </select>
+
+            <select v-model="selectedGenres" @change="handleFilterChange" class="games-view__filter-select">
+                <option value="">Todos los géneros</option>
+                <option value="action">Acción</option>
+                <option value="role-playing-games">RPG</option>
+                <option value="shooter">Shooter</option>
+                <option value="adventure">Aventura</option>
+            </select>
+        </div>
+        <div class="games-view__search">
+            <input
+                class="games-view__search-input" 
+                type="text"
+                placeholder="Buscar Juegos..."
+                v-model="search"
+                @input="handleSearch"
+                @keyup.enter="confirmarBusqueda"
+                @focus="showSearchHistory = true"
+                >
+
             <button
                 type="button"
                 class="games-view__search-button"
                 @click="confirmarBusqueda"
-                >
+            >
                 Buscar
             </button>
+        </div>
         <div v-if="showSearchHistory && searchHistory.length > 0" class="games-view__search-history">
             <button v-for="item in searchHistory" :key="item" type="button" class="games-view__search-history-item" @click="seleccionarBusquedaHistorial(item)">
             {{ item }}
