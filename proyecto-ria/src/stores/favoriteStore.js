@@ -15,20 +15,19 @@ export const useFavoriteStore = defineStore('favorites', {
           if(this.isFavorite(game.id)){
             return;
           }
-          else{
-            const addGame = {
-              id : game.id,
-              name : game.name,
-              background_image: game.background_image,
-              rating : game.rating,
-              released : game.released,
-            }
-
-            this.favorites.push(addGame);
-            favoritesStorage.save(this.favorites)
+          
+          const addGame = {
+            id : game.id,
+            name : game.name,
+            background_image: game.background_image,
+            rating : game.rating,
+            released : game.released,
           }
 
+          this.favorites.push(addGame);
+          favoritesStorage.save(this.favorites)
         },
+        
         removeFavorite(gameId) {
           this.favorites = this.favorites.filter((favorite) => favorite.id !== gameId );
           favoritesStorage.save(this.favorites)
