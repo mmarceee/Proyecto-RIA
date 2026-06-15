@@ -134,6 +134,12 @@
         savePage('1');
         fetchCurrentGames();
     }
+
+    function handleBlur() {
+        setTimeout(() => {
+            showSearchHistory.value = false;
+        }, 200);
+    }
 </script>
 
 <template>
@@ -166,6 +172,7 @@
                 @input="handleSearch"
                 @keyup.enter="confirmarBusqueda"
                 @focus="showSearchHistory = true"
+                @blur="handleBlur"
                 >
 
             <button
