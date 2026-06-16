@@ -44,8 +44,8 @@
           <span class="section-title__text">Juegos Recomendados</span>
         </div>
         
-        <LoadingState v-if="loading" message="Cargando recomendaciones..." />
-        <ErrorState v-else-if="error" :message="error" />
+        <LoadingState v-if="loading" mensaje="Cargando recomendaciones..." />
+        <ErrorState v-else-if="error" :mensaje="error" />
         <div v-else-if="recommendedGames.length > 0" class="home-recommendations__grid">
           <div v-for="juego in recommendedGames" :key="juego.id" class="home-recommendations__item">
             <GameCard :game="juego" />

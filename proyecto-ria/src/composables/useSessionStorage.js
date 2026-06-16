@@ -1,15 +1,15 @@
 import { ref } from 'vue'
 
-export function useSessionStorage(key, initialValue){
+export function useSessionStorage(key, valorInicial){
 
-    const storedValue = sessionStorage.getItem(key);
+    const valorGuardado = sessionStorage.getItem(key);
 
-    const data = ref(storedValue ? storedValue : initialValue)
+    const data = ref(valorGuardado ? valorGuardado : valorInicial)
 
-    function save(newValue){
-        data.value = newValue;
+    function save(nuevoValor){
+        data.value = nuevoValor;
 
-        sessionStorage.setItem(key, newValue);
+        sessionStorage.setItem(key, nuevoValor);
 
     }
 

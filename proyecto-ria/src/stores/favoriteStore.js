@@ -2,21 +2,21 @@ import { defineStore } from 'pinia';
 import { useLocalStorage } from '@/composables/useLocalStorage';
 
 
-const FAVORITES_STORAGE_KEY = 'favorite-games'
-const favoritesStorage = useLocalStorage(FAVORITES_STORAGE_KEY, [])
+const KEY_FAVORITOS = 'juegos-favoritos'
+const favoritosStorage = useLocalStorage(KEY_FAVORITOS, [])
 
-export const useFavoriteStore = defineStore('favorites', {
+export const useFavoriteStore = defineStore('favoritos', {
   state: () => ({
-    favorites: favoritesStorage.data.value
+    favoritos: favoritosStorage.data.value
     }),
 
     actions: {
-        addFavorite(game) {
-          if(this.isFavorite(game.id)){
+        agregarFavorito(game) {
+          if(this.isFavorito(game.id)){
             return;
           }
           
-          const addGame = {
+          const juegoFavorito = {
             id : game.id,
             name : game.name,
             background_image: game.background_image,
@@ -24,25 +24,25 @@ export const useFavoriteStore = defineStore('favorites', {
             released : game.released,
           }
 
-          this.favorites.push(addGame);
-          favoritesStorage.save(this.favorites)
+          this.favoritos.push(juegoFavorito);
+          favoritosStorage.save(this.favoritos)
         },
         
-        removeFavorite(gameId) {
-          this.favorites = this.favorites.filter((favorite) => favorite.id !== gameId );
-          favoritesStorage.save(this.favorites)
+        quitarFavorito(gameId) {
+          this.favoritos = this.favoritos.filter((favorito) => favorito.id !== gameId );
+          favoritosStorage.save(this.favoritos)
         },
 
-        isFavorite(gameId) {
-          return this.favorites.some((favorite) => favorite.id === gameId);
+        isFavorito(gameId) {
+          return this.favoritos.some((favorito) => favorito.id === gameId);
         },
 
         marcarDesmarcarFavorito(game){
-          if(this.isFavorite(game.id)){
-            this.removeFavorite(game.id)
+          if(this.isFavorito(game.id)){
+            this.quitarFavorito(game.id)
 
           }else{
-            this.addFavorite(game)
+            this.agregarFavorito(game)
           }
         },
     }

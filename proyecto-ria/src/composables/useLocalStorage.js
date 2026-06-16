@@ -1,34 +1,34 @@
 import { ref } from 'vue'
 
-export function useLocalStorage(key, initialValue) {
+export function useLocalStorage(key, valorInicial) {
 
   function getInitialValue() {
-    const storedValue = localStorage.getItem(key)
+    const valorGuardado = localStorage.getItem(key)
 
-    if (!storedValue) {
-      return initialValue
+    if (!valorGuardado) {
+      return valorInicial
     }
 
     try {
-      return JSON.parse(storedValue)
+      return JSON.parse(valorGuardado)
     } catch {
       localStorage.removeItem(key)
-      return initialValue
+      return valorInicial
     }
   }
 
   const data = ref(getInitialValue())
 
-  function save(newValue) {
-    data.value = newValue
-    localStorage.setItem(key, JSON.stringify(newValue))
+  function save(nuevoValor) {
+    data.value = nuevoValor
+    localStorage.setItem(key, JSON.stringify(nuevoValor))
   }
 
   return { data, save }
 }
 
 /*
-useLocalStorage('favorite-games', [])
+useLocalStorage('juegos-favoritos', [])
         
 busca favoritos guardados
         
