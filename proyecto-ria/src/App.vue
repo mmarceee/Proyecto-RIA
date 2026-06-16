@@ -62,7 +62,6 @@
       </div>
       <div class="app-footer__copyright">
         <p>&copy; 2026 ChickenThiefGames. Todos los derechos reservados.</p>
-        <p>Diseño inspirado en Escape Velocity por <a href="https://html5up.net" target="_blank" rel="noopener noreferrer">HTML5 UP</a>.</p>
       </div>
     </div>
   </footer>

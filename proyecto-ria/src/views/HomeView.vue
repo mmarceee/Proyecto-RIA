@@ -6,7 +6,7 @@
   import LoadingState from '@/components/LoadingState.vue'
   import ErrorState from '@/components/ErrorState.vue'
 
-  const recommendedGames = ref([])
+  const juegosRecomendados = ref([])
   const loading = ref(true)
   const error = ref(null)
 
@@ -15,8 +15,8 @@
       loading.value = true
       const games = await getGames()
       if (games && games.length > 0) {
-        const shuffled = [...games].sort(() => 0.5 - Math.random())
-        recommendedGames.value = shuffled.slice(0, 3)
+        const barajaDeJuegos = [...games].sort(() => 0.5 - Math.random())
+        juegosRecomendados.value = barajaDeJuegos.slice(0, 3)
       }
     } catch (err) {
       console.error(err)
@@ -34,20 +34,20 @@
         <h1 class="home-hero__title">Bienvenido a <span>ChickenThiefGames</span></h1>
         <p class="home-hero__subtitle">Tu portal definitivo para explorar y guardar tus videojuegos favoritos.</p>
         <div class="home-hero__actions">
-          <RouterLink to="/games" class="btn btn--primary">Explorar Juegos</RouterLink>
-          <RouterLink to="/favorites" class="btn btn--secondary">Ver Favoritos</RouterLink>
+          <RouterLink to="/games" class="btn btn--primary">Explorar juegos</RouterLink>
+          <RouterLink to="/favorites" class="btn btn--secondary">Ver favoritos</RouterLink>
         </div>
       </div>
 
-      <div class="home-recommendations">
+      <div class="home-recomendaciones">
         <div class="section-title">
-          <span class="section-title__text">Juegos Recomendados</span>
+          <span class="section-title__text">Juegos recomendados</span>
         </div>
         
         <LoadingState v-if="loading" mensaje="Cargando recomendaciones..." />
         <ErrorState v-else-if="error" :mensaje="error" />
-        <div v-else-if="recommendedGames.length > 0" class="home-recommendations__grid">
-          <div v-for="juego in recommendedGames" :key="juego.id" class="home-recommendations__item">
+        <div v-else-if="juegosRecomendados.length > 0" class="home-recomendaciones__grid">
+          <div v-for="juego in juegosRecomendados" :key="juego.id" class="home-recomendaciones__item">
             <GameCard :game="juego" />
           </div>
         </div>
@@ -60,17 +60,17 @@
         <div class="home-features__grid">
           <div class="home-feature-card">
             <div class="home-feature-card__icon">🎮</div>
-            <h3 class="home-feature-card__title">Explorar Catálogo</h3>
+            <h3 class="home-feature-card__title">Explorar catálogo</h3>
             <p class="home-feature-card__desc">Busca entre miles de videojuegos gracias a la integración en tiempo real con la API de RAWG.</p>
           </div>
           <div class="home-feature-card">
             <div class="home-feature-card__icon">⭐</div>
-            <h3 class="home-feature-card__title">Guardar Favoritos</h3>
+            <h3 class="home-feature-card__title">Guardar favoritos</h3>
             <p class="home-feature-card__desc">Agrega tus títulos preferidos a tu biblioteca personal con persistencia en tu navegador (localStorage).</p>
           </div>
           <div class="home-feature-card">
             <div class="home-feature-card__icon">⚙️</div>
-            <h3 class="home-feature-card__title">Personalizar Tema</h3>
+            <h3 class="home-feature-card__title">Personalizar tema</h3>
             <p class="home-feature-card__desc">Cambia el aspecto visual entre los modos Claro y Oscuro según tus preferencias y se guardará para siempre.</p>
           </div>
         </div>
@@ -134,18 +134,18 @@
   justify-content: center;
 }
 
-.home-recommendations {
+.home-recomendaciones {
   padding: 1rem 0;
 }
 
-.home-recommendations__grid {
+.home-recomendaciones__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
   margin-top: 1rem;
 }
 
-.home-recommendations__item {
+.home-recomendaciones__item {
   display: flex;
   justify-content: center;
 }
