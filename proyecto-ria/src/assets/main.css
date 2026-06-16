@@ -1,6 +1,6 @@
 /* Variables de Diseño CSS */
 :root {
-  /* Tema Oscuro por Defecto (Estética Gaming / Escape Velocity) */
+  /* Tema Oscuro por Defecto (Estética Gaming / ) */
   --color-bg-primary: #1e2025;
   --color-bg-secondary: #272930;
   --color-bg-tertiary: #191a1e;
@@ -9,7 +9,7 @@
   --color-text-secondary: #cdd0d8;
   --color-text-muted: #888b97;
   
-  /* Acento Naranja (Escape Velocity) */
+  /* Acento Naranja */
   --color-accent: #e05a47;
   --color-accent-hover: #f27254;
   --color-accent-rgb: 224, 90, 71;
@@ -150,6 +150,58 @@ button {
   z-index: 100;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: var(--transition-normal);
+}
+
+/* Interruptor de Tema (Sol y Luna deslizante) */
+.theme-toggle {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  width: 60px;
+  height: 30px;
+  background-color: var(--color-bg-primary);
+  border: 2px solid var(--color-border);
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  overflow: hidden;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle__icon {
+  font-size: 0.95rem;
+  user-select: none;
+  z-index: 1;
+  transition: var(--transition-fast);
+}
+
+.theme-toggle__knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  transition: var(--transition-normal);
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Desplazamiento del botón al estar en tema claro */
+.theme-toggle--light .theme-toggle__knob {
+  left: 32px;
+  background-color: #f39c12;
+}
+
+/* Hover en el switch */
+.theme-toggle:hover {
+  border-color: var(--color-accent);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3), 0 0 8px rgba(224, 90, 71, 0.2);
 }
 
 /* Contenedor del Logo (Estilo Escape Velocity) */
