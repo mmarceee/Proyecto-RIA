@@ -12,7 +12,7 @@
     const cargando = ref(false)
     const error = ref(null)
 
-    const favoriteStore = useFavoriteStore()
+    const favoritoStore = useFavoriteStore()
 
     onMounted(async () => {
         cargando.value = true
@@ -44,12 +44,12 @@
         return game.value.platforms.map((item) => item.platform.name).join(', ')
     })
 
-    const isCurrentGameFavorite = computed(() => {
+    const elJuegoActualEsFavorito = computed(() => {
         if (!game.value){
             return false
         }
 
-        return favoriteStore.isFavorite(game.value.id)
+        return favoritoStore.isFavorito(game.value.id)
     })
 
 
@@ -57,13 +57,13 @@
 
 <template>
     <section class="game-detail">
-        <LoadingState v-if="cargando" message="Cargando detalles del juego..." />
-        <ErrorState v-else-if="error" :message="error" />
+        <LoadingState v-if="cargando" mensaje="Cargando detalles del juego..." />
+        <ErrorState v-else-if="error" :mensaje="error" />
         <div v-else-if="game">
             <h1 class="game-detail__title">Detalles del Juego</h1>
             <p class="game-detail__name">{{ game.name }}</p>
-            <button @click="favoriteStore.marcarDesmarcarFavorito(game)" class="game-detail__favorite-button--active" type="button"> 
-                {{ isCurrentGameFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos' }} 
+            <button @click="favoritoStore.marcarDesmarcarFavorito(game)" class="game-detail__favorito-button--active" type="button"> 
+                {{ elJuegoActualEsFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos' }} 
             </button>
             <img 
                 class="game-detail__image"

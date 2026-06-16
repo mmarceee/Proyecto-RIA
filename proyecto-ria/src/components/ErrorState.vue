@@ -1,7 +1,7 @@
 <script setup>
 
     defineProps({
-        message:{
+        mensaje:{
             type: String,
             default: 'Ocurrió un error'
         },
@@ -12,7 +12,7 @@
 
 <template>
     <div class="error-state">
-        <p class="error-state__message">{{ message }}</p>
+        <p class="error-state__mensaje">{{ mensaje }}</p>
     </div>
 </template>
 

@@ -188,8 +188,8 @@
             {{ item }}
             </button> 
         </div>
-        <LoadingState v-if="cargando" message="Cargando juegos..." />
-        <ErrorState v-else-if="error" :message="error" />
+        <LoadingState v-if="cargando" mensaje="Cargando juegos..." />
+        <ErrorState v-else-if="error" :mensaje="error" />
         <p class="games-view__empty-state" v-else-if="juegos.length === 0">
             No hay resultados para tu busqueda.
         </p>
