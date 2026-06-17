@@ -43,16 +43,55 @@ const esJuegoFavorito = computed(() => {
 
 <style scoped>
 
-.game-card{
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+.game-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--color-header-hover-bg); 
+  border-radius: var(--border-radius-sm);
+  box-shadow: 0 4px 8px var(--color-card-shadow);
+  transition: var(--transition-normal);
+  overflow: hidden; 
 }
 
-.game-card__image{
-    width: 150px;
-    height: 100px;
-    object-fit: cover;
+.game-card__title {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+.game-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px var(--color-card-hover-shadow);
+}
+
+.game-card__image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.game-card__link {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  flex-grow: 1; 
+  text-decoration: none;
+  color: inherit;
+}
+
+.game-card__favorite-button {
+  margin: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: var(--transition-normal);
 }
 
 </style>

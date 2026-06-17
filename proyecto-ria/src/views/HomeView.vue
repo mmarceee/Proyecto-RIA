@@ -1,6 +1,6 @@
 <script setup>
   import { RouterLink } from 'vue-router'
-  import { ref, onMounted } from 'vue'
+  import { ref, onMounted, onUnmounted } from 'vue'
   import { getGames } from '@/services/gameService'
   import GameCard from '@/components/GameCard.vue'
   import LoadingState from '@/components/LoadingState.vue'
@@ -9,14 +9,16 @@
   const juegosRecomendados = ref([])
   const loading = ref(true)
   const error = ref(null)
-
+  const currentIndex = ref(0)
+  let secInterval = null;
+  
   onMounted(async () => {
     try {
       loading.value = true
       const games = await getGames()
       if (games && games.length > 0) {
         const barajaDeJuegos = [...games].sort(() => 0.5 - Math.random())
-        juegosRecomendados.value = barajaDeJuegos.slice(0, 3)
+        juegosRecomendados.value = barajaDeJuegos.slice(0, 10)
       }
     } catch (err) {
       console.error(err)
@@ -24,6 +26,17 @@
     } finally {
       loading.value = false
     }
+    
+    secInterval = setInterval(() => {
+      currentIndex.value ++;
+      if(currentIndex.value >= juegosRecomendados.value.length) {
+        currentIndex.value = 0;
+      }
+    }, 4000);
+  })
+
+  onUnmounted(() => {
+      clearInterval(secInterval);
   })
 </script>
 
@@ -40,17 +53,33 @@
       </div>
 
       <div class="home-recomendaciones">
-        <div class="section-title">
+        <h1 class="section-title">
           <span class="section-title__text">Juegos recomendados</span>
-        </div>
+        </h1>
         
-        <LoadingState v-if="loading" mensaje="Cargando recomendaciones..." />
+        <div class="home-carrusel" v-if="juegosRecomendados.length > 0">
+         
+          <Transition name="fade" mode="out-in">
+            <article class="home-carrusel__card" :key="currentIndex">
+              <img
+                :src="juegosRecomendados[currentIndex].background_image"
+                :alt="juegosRecomendados[currentIndex].name"
+                class="home-carrusel__image"
+              />
+              <div class="home-carrusel__overlay">
+                <h2 class="home-carrusel__title">{{ juegosRecomendados[currentIndex].name }}</h2>
+              </div>
+            </article>
+          </Transition>
+        </div>
+
+        <!-- <LoadingState v-if="loading" mensaje="Cargando recomendaciones..." />
         <ErrorState v-else-if="error" :mensaje="error" />
         <div v-else-if="juegosRecomendados.length > 0" class="home-recomendaciones__grid">
           <div v-for="juego in juegosRecomendados" :key="juego.id" class="home-recomendaciones__item">
             <GameCard :game="juego" />
           </div>
-        </div>
+        </div> -->
       </div>
 
       <div class="home-features">
@@ -197,6 +226,49 @@
   font-size: 0.95rem;
   color: var(--color-text-secondary);
   line-height: 1.5;
+}
+
+.home-carrusel__card {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  height: 400px;
+  margin: 0 auto;
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 10px 30px var(--color-card-shadow);
+}
+
+.home-carrusel__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-carrusel__overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 3rem 2rem 1.5rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  display: flex;
+  justify-content: center;
+}
+
+.home-carrusel__title {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+  text-align: center;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
 
 @media (max-width: 768px) {

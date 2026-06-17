@@ -54,12 +54,6 @@
 
   <footer class="app-footer">
     <div class="app-footer__container">
-      <div class="app-footer__links">
-        <RouterLink class="app-footer__link" to="/">Inicio</RouterLink>
-        <RouterLink class="app-footer__link" to="/games">Juegos</RouterLink>
-        <RouterLink class="app-footer__link" to="/favorites">Favoritos</RouterLink>
-        <RouterLink class="app-footer__link" to="/settings">Configuración</RouterLink>
-      </div>
       <div class="app-footer__copyright">
         <p>&copy; 2026 ChickenThiefGames. Todos los derechos reservados.</p>
       </div>
