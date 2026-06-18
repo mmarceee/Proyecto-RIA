@@ -100,7 +100,7 @@
           <div class="home-feature-card">
             <div class="home-feature-card__icon">⚙️</div>
             <h3 class="home-feature-card__title">Personalizar tema</h3>
-            <p class="home-feature-card__desc">Cambia el aspecto visual entre los modos Claro y Oscuro según tus preferencias y se guardará para siempre.</p>
+            <p class="home-feature-card__desc">Cambia el aspecto visual entre los modos Claro y Oscuro según tus preferencias y se guardará.</p>
           </div>
         </div>
       </div>

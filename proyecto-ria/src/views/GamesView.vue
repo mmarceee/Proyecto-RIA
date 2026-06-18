@@ -140,6 +140,13 @@
             showSearchHistory.value = false;
         }, 200);
     }
+
+    function limpiarFiltros(){
+        selectedGenres.value = ''
+        selectedPlatforms.value = ''
+        handleFilterChange()
+    }
+
 </script>
 
 <template>
@@ -162,6 +169,14 @@
                 <option value="shooter">Shooter</option>
                 <option value="adventure">Aventura</option>
             </select>
+            <button
+                type="button"
+                class="games-view__clear-filters"
+                v-if="(selectedGenres) || (selectedPlatforms)"
+                @click="limpiarFiltros"
+            >
+            Limpiar Filtros
+            </button>
         </div>
         <div class="games-view__search">
             <input
@@ -173,7 +188,7 @@
                 @keyup.enter="confirmarBusqueda"
                 @focus="showSearchHistory = true"
                 @blur="handleBlur"
-                >
+            >
 
             <button
                 type="button"
@@ -184,6 +199,7 @@
             </button>
         </div>
         <div v-if="showSearchHistory && searchHistory.length > 0" class="games-view__search-history">
+            <p class="games-view__search-history-label">Búsquedas recientes:</p>
             <button v-for="item in searchHistory" :key="item" type="button" class="games-view__search-history-item" @click="seleccionarBusquedaHistorial(item)">
             {{ item }}
             </button> 
@@ -238,6 +254,11 @@
     padding: 0;
 }
 
+.games-view__search{
+    display: flex;
+    gap: 0.5rem;
+}
+
 .games-view__search-input{
     background-color: var(--color-bg-secondary);
     color: var(--color-text-primary);
@@ -249,7 +270,7 @@
 }
 
 .games-view__search-input:hover{
-    border-color: var(--color-text-muted);
+    border: 1px solid var(--color-text-muted);
 }
 
 .games-view__search-input:focus{
@@ -257,14 +278,14 @@
 }
 
 .games-view__search-button{
-    padding: 0 2% 0 2%;
+    padding: 0 1.5rem;
     border-radius: var(--border-radius-md);
     border: 1px solid var(--color-border);
     background-color: var(--color-accent);
 }
 
 .games-view__search-button:hover{
-    background-color: var(--color-accent-hover);
+    border: 1px solid var(--color-text-muted);
 }
 
 .games-view__search-button:focus-visible{
@@ -300,9 +321,76 @@
 
 .games-view__filters{
     display: flex;
-    flex: start;
-    gap: 1rem;
+    justify-content: flex-start;
+    gap: 0.5rem;
     margin: 1rem 0;
 }
+
+.games-view__clear-filters{
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--border-radius-md);
+    padding: 0 1rem;
+    transition: var(--transition-fast);
+}
+
+.games-view__clear-filters:hover{
+    background-color: var(--color-border);
+}
+
+.games-view__search-history{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    align-items: center;
+}
+
+.games-view__search-history-item{
+    padding: 0 0.5rem;
+    font-family: var(--font-body);
+    font-style: italic;
+    transition: var(--transition-fast);
+}
+
+.games-view__search-history-item:hover{
+    background-color: var(--color-accent);
+    border-radius: var(--border-radius-md);
+}
+
+.games-view__search-history-label{
+    padding: 0 0.5rem;
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+}
+
+.games-view__pagination{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.games-view__page-button{
+    background-color: var(--color-accent);
+    border: 1px solid var(--color-text-primary);
+    border-radius: var(--border-radius-md);
+    padding: 0 0.5rem;
+    transition: var(--transition-fast);
+    
+}
+
+.games-view__page-button:not(:disabled):hover{
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-text-muted);
+}
+
+.games-view__page-button:disabled{
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--color-bg-tertiary);
+}
+
 
 </style>

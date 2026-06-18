@@ -1,7 +1,7 @@
 
 const apiKey = import.meta.env.VITE_RAWG_API_KEY;
 const baseUrl = import.meta.env.VITE_RAWG_API_BASE_URL || 'https://api.rawg.io/api';
-const pageSize = import.meta.env.VITE_RAWG_PAGE_SIZE || 20;
+const pageSize = import.meta.env.VITE_RAWG_PAGE_SIZE || 21;
 
 export async function getGames (search = '', page = 1, platforms = '', genres = '') {
     

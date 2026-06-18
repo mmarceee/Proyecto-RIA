@@ -47,7 +47,8 @@ const esJuegoFavorito = computed(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: var(--color-header-hover-bg); 
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-text-primary); 
   border-radius: var(--border-radius-sm);
   box-shadow: 0 4px 8px var(--color-card-shadow);
   transition: var(--transition-normal);
@@ -87,11 +88,17 @@ const esJuegoFavorito = computed(() => {
   margin: 1rem;
   padding: 0.5rem 1rem;
   background-color: var(--color-accent);
-  color: #fff;
-  border: none;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-text-primary);
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   transition: var(--transition-normal);
+}
+
+.game-card__favorite-button:hover{
+  color: var(--color-bg-primary);
+  border: 1px solid var(--color-text-muted);
+  transition: var(--transition-fast);
 }
 
 </style>
