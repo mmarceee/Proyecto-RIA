@@ -219,6 +219,11 @@
 
 <style scoped>
 
+.games-view__title{
+    display: flex;
+    justify-content: center;
+}
+
 .games-view__list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -233,5 +238,71 @@
     padding: 0;
 }
 
+.games-view__search-input{
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    transition: var(--transition-fast);
+}
+
+.games-view__search-input:hover{
+    border-color: var(--color-text-muted);
+}
+
+.games-view__search-input:focus{
+    border-color: var(--color-accent);
+}
+
+.games-view__search-button{
+    padding: 0 2% 0 2%;
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-accent);
+}
+
+.games-view__search-button:hover{
+    background-color: var(--color-accent-hover);
+}
+
+.games-view__search-button:focus-visible{
+    border-color: var(--color-text-primary);
+
+}
+
+.games-view__filter-label{
+    color: var(--color-text-secondary);
+    display: flex;
+    max-width: fit-content;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.games-view__filter-select{
+    color: var(--color-text-primary);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-accent);
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    transition: var(--transition-fast);
+}
+
+.games-view__filter-select:hover{
+    border-color: var(--color-text-muted);
+}
+
+.games-view__filter-select:focus{
+    border-color: var(--color-accent);
+}
+
+.games-view__filters{
+    display: flex;
+    flex: start;
+    gap: 1rem;
+    margin: 1rem 0;
+}
 
 </style>
