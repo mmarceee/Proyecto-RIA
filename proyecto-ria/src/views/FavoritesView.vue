@@ -21,4 +21,25 @@
     </section>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+.favoritos-view__title{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.favoritos-view__list{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.favoritos-view__item {
+    width: 100%;
+    max-width: 350px;
+}
+
+</style>

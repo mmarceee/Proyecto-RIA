@@ -30,7 +30,7 @@
 
         try {
             const games = await getGames(search.value, currentPage.value, selectedPlatforms.value, selectedGenres.value);
-            juegos.value = games;
+            juegos.value = [...games].sort(() => Math.random() - 0.5); //spread operator crea un nuevo array copiando todos los elementos de games.
         } catch (err) {
             error.value = 'Error al cargar los juegos';
             console.error(err);
@@ -392,5 +392,22 @@
     background-color: var(--color-bg-tertiary);
 }
 
+@media (max-width: 768px) {
+    .games-view__filters{
+        flex-direction: column;
+    }
 
+    .games-view__filter-select{
+        width: 100%;
+    }
+
+    .games-view__clear-filters{
+        width: 100%;
+    }
+
+    .games-view__search{
+        flex-direction: column;
+        width: 100%;
+    }
+}
 </style>
