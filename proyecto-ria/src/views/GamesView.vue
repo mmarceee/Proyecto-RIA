@@ -5,23 +5,31 @@
     import LoadingState from '@/components/LoadingState.vue'
     import ErrorState from '@/components/ErrorState.vue'
     import { useSessionStorage } from '@/composables/useSessionStorage'
-
-    const CLAVE_HISTORIAL_BUSQUEDAS = 'historial_busquedas_juegos'
+    import { useAuthStore } from '@/stores/authStore'
+    const authStore = useAuthStore()
+    
+    // 2. Definimos una constante para identificar al usuario activo (o 'invitado' si no hay sesión)
+    const usuarioActivo = authStore.currentUser || 'invitado'
+    
+    // 3. La clave del historial ahora incluye el nombre del usuario
+    const CLAVE_HISTORIAL_BUSQUEDAS = `historial_busquedas_juegos_${usuarioActivo}`
 
     const juegos = ref([]);
     const cargando = ref(false);
     const error = ref(null);
 
-    const { data: search, save: saveSearch } = useSessionStorage('games_search', '');
-    const { data: storedPage, save: savePage } = useSessionStorage('games_page', '1');
-    const { data: selectedPlatforms, save: saveSelectedPlatforms } = useSessionStorage('games_platforms', '');
-    const { data: selectedGenres, save: saveSelectedGenres } = useSessionStorage('games_genres', '');
 
+    // 4. Modificamos las claves de sesión para que sean individuales por usuario
+    const { data: search, save: saveSearch } = useSessionStorage(`games_search_${usuarioActivo}`, '');
+    const { data: storedPage, save: savePage } = useSessionStorage(`games_page_${usuarioActivo}`, '1');
+    const { data: selectedPlatforms, save: saveSelectedPlatforms } = useSessionStorage(`games_platforms_${usuarioActivo}`, '');
+    const { data: selectedGenres, save: saveSelectedGenres } = useSessionStorage(`games_genres_${usuarioActivo}`, '');
+    
     const initialPage = parseInt(storedPage.value);
     const currentPage = ref(Number.isNaN(initialPage) || initialPage < 1 ? 1 : initialPage); 
     const searchHistory = ref(cargarHistorialBusquedas());
     const showSearchHistory = ref(false);
-
+    
     let temporizador = null;
 
     async function fetchCurrentGames() {
@@ -67,7 +75,8 @@
     }
 
     function cargarHistorialBusquedas(){
-        let historial = sessionStorage.getItem(CLAVE_HISTORIAL_BUSQUEDAS)
+        // Cambiado de sessionStorage a localStorage para persistir al cerrar la pestaña
+        let historial = localStorage.getItem(CLAVE_HISTORIAL_BUSQUEDAS)
         if(historial == null){
             return []
         }else{
@@ -75,16 +84,15 @@
                 return JSON.parse(historial);
             }
             catch{
-                sessionStorage.removeItem(CLAVE_HISTORIAL_BUSQUEDAS)
+                localStorage.removeItem(CLAVE_HISTORIAL_BUSQUEDAS)
                 return []
             }
         }
-
     }
-
     function guardarHistorialBusquedas(historial){
         searchHistory.value = historial;
-        sessionStorage.setItem(CLAVE_HISTORIAL_BUSQUEDAS, JSON.stringify(historial))
+        // Cambiado de sessionStorage a localStorage para persistir al cerrar la pestaña
+        localStorage.setItem(CLAVE_HISTORIAL_BUSQUEDAS, JSON.stringify(historial))
     }
 
     function agregarBusquedaAlHistorial(busqueda){
