@@ -60,16 +60,18 @@
         <div class="home-carrusel" v-if="juegosRecomendados.length > 0">
          
           <Transition name="fade" mode="out-in">
-            <article class="home-carrusel__card" :key="currentIndex">
-              <img
-                :src="juegosRecomendados[currentIndex].background_image"
-                :alt="juegosRecomendados[currentIndex].name"
-                class="home-carrusel__image"
-              />
-              <div class="home-carrusel__overlay">
-                <h2 class="home-carrusel__title">{{ juegosRecomendados[currentIndex].name }}</h2>
-              </div>
-            </article>
+            <RouterLink  class="game-card__link" :to="{ name: 'game-detail', params: { id: juegosRecomendados[currentIndex].id } }">
+              <article class="home-carrusel__card" :key="currentIndex">
+                <img
+                  :src="juegosRecomendados[currentIndex].background_image"
+                  :alt="juegosRecomendados[currentIndex].name"
+                  class="home-carrusel__image"
+                />
+                <div class="home-carrusel__overlay">
+                  <h2 class="home-carrusel__title">{{ juegosRecomendados[currentIndex].name }}</h2>
+                </div>
+              </article>
+            </RouterLink>
           </Transition>
         </div>
 
