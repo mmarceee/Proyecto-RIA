@@ -1,6 +1,6 @@
 <script setup>
     import { useRoute } from 'vue-router'
-    import { ref, onMounted, computed } from 'vue'
+    import { ref, onMounted, computed, onUnmounted } from 'vue'
     import { getGameById, getGameScreenshots } from '@/services/gameService'
     import LoadingState from '@/components/LoadingState.vue'
     import ErrorState from '@/components/ErrorState.vue'
@@ -12,12 +12,15 @@
     const cargando = ref(false)
     const error = ref(null)
     const screenshots = ref([])
+    const imagenSeleccionada = ref(null)
+    let inicioToqueX = 0
 
     const favoritoStore = useFavoriteStore()
 
     onMounted(async () => {
         cargando.value = true
         error.value = null
+        window.addEventListener('keydown', manejarTeclado)
         try{
             game.value = await getGameById(gameId)
             screenshots.value = await getGameScreenshots(gameId)
@@ -27,6 +30,10 @@
         } finally {
             cargando.value = false
         }
+    })
+
+    onUnmounted(() => {
+        window.removeEventListener('keydown', manejarTeclado)
     })
 
     // Computed para mostrar los nombres de los géneros
@@ -54,6 +61,44 @@
         return favoritoStore.isFavorito(game.value.id)
     })
 
+    function mostrarSiguiente(){
+        const indiceActual = screenshots.value.findIndex(function (shot) {
+            return shot.id === imagenSeleccionada.value.id
+        })
+
+        const siguienteIndice = (indiceActual + 1) % screenshots.value.length
+        imagenSeleccionada.value = screenshots.value[siguienteIndice]
+    }
+
+    function mostrarAnterior(){
+        const indiceActual = screenshots.value.findIndex(function (shot) {
+            return shot.id === imagenSeleccionada.value.id
+        })
+
+        const indiceAnterior = (indiceActual - 1 + screenshots.value.length) % screenshots.value.length
+        imagenSeleccionada.value = screenshots.value[indiceAnterior]
+    }
+
+    function manejarTeclado(event) {
+        if (event.key === 'Escape') {
+            imagenSeleccionada.value = null
+        }
+    }
+
+    function iniciarDeslizamiento(event) {
+        inicioToqueX = event.touches[0].clientX
+    }
+
+    function terminarDeslizamiento(event) {
+        const finToqueX = event.changedTouches[0].clientX
+        const diferenciaX = finToqueX - inicioToqueX
+
+        if (diferenciaX < -50) {
+            mostrarSiguiente()
+        } else if (diferenciaX > 50) {
+            mostrarAnterior()
+        }
+    }
 
 </script>
 
@@ -80,6 +125,7 @@
                         :key="shot.id" 
                         :src="shot.image" 
                         alt="Screenshot"
+                        @click="imagenSeleccionada = shot"
                         class="game-detail__gallery-image"
                     />
                 </div>
@@ -104,6 +150,39 @@
                 <p class="game-detail__genres">Géneros: {{ genreNames }}</p>
             </div>
             
+        </div>
+        <div v-if="imagenSeleccionada" class="game-detail__modal">
+            <div class="game-detail__modal-contenido" @touchstart="iniciarDeslizamiento" @touchend="terminarDeslizamiento">
+                <button
+                    type="button"
+                    class="game-detail__modal-cerrar"
+                    aria-label="Cerrar imagen"
+                    @click="imagenSeleccionada = null"
+                >
+                    X
+                </button>
+                <button
+                    type="button"
+                    class="game-detail__modal-anterior"
+                    aria-label="Imagen anterior"
+                    @click="mostrarAnterior"
+                >
+                    &lt;
+                </button>
+                <button
+                    type="button"
+                    class="game-detail__modal-siguiente"
+                    aria-label="Imagen siguiente"
+                    @click="mostrarSiguiente"
+                >
+                    &gt;
+                </button>
+                <img
+                class="game-detail__modal-imagen"
+                :src="imagenSeleccionada.image"
+                alt="Imagen Ampliada"
+                >
+            </div>
         </div>
     </section>
 </template>
@@ -182,9 +261,97 @@
   box-shadow: 0 8px 15px var(--color-accent);
 }
 
+.game-detail__modal{
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-detail__modal-contenido{
+    position: relative;
+    touch-action: pan-y;
+}
+
+.game-detail__modal-imagen{
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: var(--border-radius-md);
+}
+
+.game-detail__modal-cerrar{
+    font-size: 1.8rem;
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg-primary);
+    cursor: pointer;
+    z-index: 99999;
+    border-radius: var(--border-radius-lg);
+    padding: 0.3rem;
+    border: 1px solid var(--color-bg-primary);
+}
+
+.game-detail__modal-cerrar:hover{
+    background-color: var(--color-accent-hover);
+}
+
+.game-detail__modal-siguiente {
+    position: absolute;
+    top: 50%;
+    right: 1.5rem;
+    transform: translateY(-50%);
+    z-index: 1;
+    background-color: var(--color-accent);
+    color: var(--color-text-primary);
+    font-size: 1.8rem;
+    border-radius: 20px;
+    padding: 0.3rem;
+    border: 1px solid var(--color-text-primary);
+    cursor: pointer;
+}
+
+.game-detail__modal-siguiente:hover{
+    background-color: var(--color-accent-hover);
+}
+
+.game-detail__modal-anterior {
+    position: absolute;
+    top: 50%;
+    left: 1.5rem;
+    transform: translateY(-50%);
+    z-index: 1;
+    background-color: var(--color-accent);
+    color: var(--color-text-primary);
+    font-size: 1.8rem;
+    border-radius: 20px;
+    padding: 0.3rem;
+    border: 1px solid var(--color-text-primary);
+    cursor: pointer;
+}
+
+.game-detail__modal-anterior:hover{
+    background-color: var(--color-accent-hover);
+}
+
+
 @media (max-width: 768px) {
   .game-detail__content {
     grid-template-columns: 1fr;
+  }
+  .game-detail__modal-cerrar{
+    font-size: 0.8rem;
+  }
+  .game-detail__modal-anterior{
+    font-size: 0.8rem;
+  }
+  .game-detail__modal-siguiente{
+    font-size: 0.8rem;
   }
 }
 </style>

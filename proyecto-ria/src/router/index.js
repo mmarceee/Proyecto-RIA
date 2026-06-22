@@ -72,16 +72,16 @@ const router = createRouter({
 
 // 5. Guardián de navegación (Navigation Guard)
 // Se ejecuta cada vez que el usuario intenta cambiar de página
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   const authStore = useAuthStore()
 
   // Si la ruta a la que va requiere autenticación y el usuario NO está logueado
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     // Redirigir a la página de inicio de sesión
-    next({ name: 'login' })
+    return { name: 'login' }
   } else {
     // Permitir el paso
-    next()
+    return true
   }
 })
 
