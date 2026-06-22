@@ -25,6 +25,7 @@
         window.addEventListener('keydown', manejarTeclado)
         try {
             game.value = await getGameById(id)
+            screenshots.value = await getGameScreenshots(id)
         } catch (err) {
             error.value = 'Error al cargar los detalles del juego'
             console.error(err)
