@@ -1,29 +1,30 @@
 <script setup>
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
     import { ref, onMounted, computed, onUnmounted } from 'vue'
     import { getGameById, getGameScreenshots } from '@/services/gameService'
     import LoadingState from '@/components/LoadingState.vue'
     import ErrorState from '@/components/ErrorState.vue'
     import { useFavoriteStore } from '@/stores/favoriteStore'
-
+    import { useAuthStore } from '@/stores/authStore'
+   
     const route = useRoute()
-    const gameId = route.params.id
+    const router = useRouter()
+    const favoritoStore = useFavoriteStore()
+    const authStore = useAuthStore()
+
     const game = ref(null)
-    const cargando = ref(false)
+    const cargando = ref(true)
     const error = ref(null)
+
     const screenshots = ref([])
     const imagenSeleccionada = ref(null)
     let inicioToqueX = 0
 
-    const favoritoStore = useFavoriteStore()
-
     onMounted(async () => {
-        cargando.value = true
-        error.value = null
+        const id = route.params.id
         window.addEventListener('keydown', manejarTeclado)
-        try{
-            game.value = await getGameById(gameId)
-            screenshots.value = await getGameScreenshots(gameId)
+        try {
+            game.value = await getGameById(id)
         } catch (err) {
             error.value = 'Error al cargar los detalles del juego'
             console.error(err)
@@ -38,13 +39,11 @@
 
     // Computed para mostrar los nombres de los géneros
     const genreNames = computed(() => {
-        if (!game.value?.genres?.length) { //el value?.genres : Si game.value existe, intentá acceder a genres. Si no existe, no rompe. (optional chaining)
-            return 'Sin información'        // Y si todo eso es falso, osea no hay géneros disponibles, devolvé 'Sin información'.
+        if (!game.value?.genres?.length) {
+            return 'Sin información'
         }
-
-        return game.value.genres.map((genre) => genre.name).join(', ')
+        return game.value.genres.map((item) => item.name).join(', ')
     })
-
     const platformNames = computed(() => {
         if (!game.value?.platforms?.length) {
             return 'Sin información'
@@ -52,12 +51,10 @@
     
         return game.value.platforms.map((item) => item.platform.name).join(', ')
     })
-
     const elJuegoActualEsFavorito = computed(() => {
         if (!game.value){
             return false
         }
-
         return favoritoStore.isFavorito(game.value.id)
     })
 
@@ -100,6 +97,14 @@
         }
     }
 
+    function handleFavoriteClick() {
+      if (!authStore.isAuthenticated) {
+        
+        router.push('/login')
+      } else {
+        favoritoStore.marcarDesmarcarFavorito(game.value)
+      }
+    }
 </script>
 
 <template>
@@ -135,7 +140,7 @@
                 <h1 class="game-detail__title">Detalles del Juego</h1>
                 <p class="game-detail__name">{{ game.name }}</p>
                 
-                <button @click="favoritoStore.marcarDesmarcarFavorito(game)" class="game-detail__favorito-button--active" type="button"> 
+                <button @click="handleFavoriteClick" class="game-detail__favorito-button--active" type="button"> 
                     {{ elJuegoActualEsFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos' }} 
                 </button>
                 

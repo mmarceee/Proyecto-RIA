@@ -1,10 +1,13 @@
 <script setup> 
 
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { computed } from 'vue'
 import { useFavoriteStore } from '@/stores/favoriteStore'
+import { useAuthStore } from '@/stores/authStore'
 
 const favoritoStore = useFavoriteStore()
+const authStore = useAuthStore() 
+const router = useRouter() 
 
 const props = defineProps({
     game:{
@@ -12,11 +15,19 @@ const props = defineProps({
         required: true
     },
 })
-
 const esJuegoFavorito = computed(() => {
     return favoritoStore.isFavorito(props.game.id)
 })
 
+function handleFavoriteClick() {
+  if (!authStore.isAuthenticated) {
+    
+    router.push('/login')
+  } else {
+    
+    favoritoStore.marcarDesmarcarFavorito(props.game)
+  }
+}
 </script>
 
 <template>
@@ -35,7 +46,7 @@ const esJuegoFavorito = computed(() => {
         <p class="game-card__rating">Calificación: {{ game.rating }}</p>
         <p class="game-card__released">Lanzamiento: {{ game.released }}</p>
         </RouterLink>
-        <button type="button" @click="favoritoStore.marcarDesmarcarFavorito(game)" class="game-card__favorite-button" :class="{ 'game-card__favorite-button--active': esJuegoFavorito }">
+        <button type="button" @click="handleFavoriteClick" class="game-card__favorite-button" :class="{ 'game-card__favorite-button--active': esJuegoFavorito }">
             {{ esJuegoFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos' }}
         </button>
     </article>

@@ -77,7 +77,7 @@ function handleLogin() {
             v-model="username"
             type="text"
             class="auth-form__input"
-            placeholder="Introduce tu usuario (Ej: admin)"
+            placeholder="Introduce tu usuario"
             required
             :disabled="cargando"
           />
@@ -102,13 +102,7 @@ function handleLogin() {
         </button>
       </form>
 
-      <!-- Tip de prueba para el profesor/tester -->
-      <div class="auth-tip">
-        💡 <strong>Tip de prueba:</strong> Puedes usar el usuario por defecto: 
-        <br>
-        <code>Usuario: admin</code> | <code>Contraseña: admin</code>
-      </div>
-
+      
       <div class="auth-card__footer">
         ¿No tienes una cuenta aún?
         <RouterLink to="/register" class="auth-card__link">Regístrate aquí</RouterLink>
