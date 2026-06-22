@@ -12,7 +12,7 @@
 <template>
     <section class="favoritos-view">
         <h1 class="favoritos-view__title">Favoritos</h1>
-        <div class="favoritos-view__empty-state" v-if="estaVacio">No hay juegos favoritos aún</div>
+        <div class="favoritos-view__empty-state" v-if="estaVacio">No hay juegos favoritos aún.</div>
         <ul v-else class="favoritos-view__list">
             <li class="favoritos-view__item" v-for="favorito in favoritoStore.favoritos" :key="favorito.id">
                  <GameCard :game="favorito" />

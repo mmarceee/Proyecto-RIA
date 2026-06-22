@@ -8,4 +8,11 @@
     </section>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+.settings-view {
+    display: flex;
+    justify-content: center;
+}
+
+</style>

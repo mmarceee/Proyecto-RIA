@@ -21,46 +21,44 @@ const cargando = ref(false)
 function handleRegister() {
   errorMsg.value = ''
   successMsg.value = ''
-
   // Validaciones básicas en el cliente
   if (!username.value.trim() || !email.value.trim() || !password.value || !confirmPassword.value) {
     errorMsg.value = 'Por favor, completa todos los campos.'
     return
   }
-
   if (password.value !== confirmPassword.value) {
     errorMsg.value = 'Las contraseñas no coinciden.'
     return
   }
-
   if (password.value.length < 4) {
     errorMsg.value = 'La contraseña debe tener al menos 4 caracteres.'
     return
   }
-
   cargando.value = true
-
-  // Pequeño retardo simulado para dar sensación de procesamiento premium
+  // Retardo simulado para una buena transición visual
   setTimeout(() => {
     try {
+      const userToRegister = username.value.trim()
+      const passToRegister = password.value
+      // 1. Registramos el usuario en LocalStorage
+      authStore.registrarUsuario(userToRegister, email.value.trim(), passToRegister)
       
-      authStore.registrarUsuario(username.value.trim(), email.value.trim(), password.value)
+      // 2. Iniciamos sesión automáticamente con los mismos datos
+      authStore.iniciarSesion(userToRegister, passToRegister)
       
-      successMsg.value = '¡Usuario registrado con éxito! Redirigiendo al login...'
+      successMsg.value = '¡Cuenta creada con éxito! Iniciando sesión...'
       
       // Limpiamos los campos
       username.value = ''
       email.value = ''
       password.value = ''
       confirmPassword.value = ''
-
-      
+      // 3. Redirigir directamente al Home (/) después de 1.5 segundos
       setTimeout(() => {
-        router.push('/login')
-      }, 2000)
-
+        router.push('/')
+      }, 1500)
     } catch (error) {
-      // Si el store tiró error porque el usuario/email está duplicado, lo mostramos aquí
+      // Si el store tira un error (ej. usuario o email repetidos), lo capturamos aquí
       errorMsg.value = error.message
     } finally {
       cargando.value = false
