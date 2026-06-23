@@ -29,6 +29,8 @@
     const currentPage = ref(Number.isNaN(initialPage) || initialPage < 1 ? 1 : initialPage); 
     const searchHistory = ref(cargarHistorialBusquedas());
     const showSearchHistory = ref(false);
+
+    const visorFinal = ref(null);
     
     let temporizador = null;
 
@@ -38,7 +40,13 @@
 
         try {
             const games = await getGames(search.value, currentPage.value, selectedPlatforms.value, selectedGenres.value);
-            juegos.value = [...games].sort(() => Math.random() - 0.5); //spread operator crea un nuevo array copiando todos los elementos de games.
+            
+            if(currentPage.value === 1) {
+                juegos.value = [...games].sort(() => Math.random() - 0.5);
+            }
+            else {
+                juegos.value = [...juegos.value, ...games]; //spread operator crea un nuevo array copiando todos los elementos de games.
+            }    
         } catch (err) {
             error.value = 'Error al cargar los juegos';
             console.error(err);
@@ -58,21 +66,34 @@
     }
     onMounted(() => {
         fetchCurrentGames()
+
+        const observer = new IntersectionObserver((entradas) => {
+            const elementoVigilado = entradas[0]
+
+            if(elementoVigilado.isIntersecting && !cargando.value){
+                currentPage.value ++;
+                fetchCurrentGames();
+            }
+        });
+
+        if(visorFinal.value){
+            observer.observe(visorFinal.value);
+        }
     })
 
-    function nextPage() {
-        currentPage.value += 1;
-        savePage(currentPage.value.toString())
-        fetchCurrentGames();
-    }
+    // function nextPage() {
+    //     currentPage.value += 1;
+    //     savePage(currentPage.value.toString())
+    //     fetchCurrentGames();
+    // }
 
-    function prevPage() {
-        if (currentPage.value > 1) {
-            currentPage.value -= 1;
-            savePage(currentPage.value.toString())
-            fetchCurrentGames();
-        }
-    }
+    // function prevPage() {
+    //     if (currentPage.value > 1) {
+    //         currentPage.value -= 1;
+    //         savePage(currentPage.value.toString())
+    //         fetchCurrentGames();
+    //     }
+    // }
 
     function cargarHistorialBusquedas(){
         // Cambiado de sessionStorage a localStorage para persistir al cerrar la pestaña
@@ -212,32 +233,17 @@
             {{ item }}
             </button> 
         </div>
-        <LoadingState v-if="cargando" mensaje="Cargando juegos..." />
-        <ErrorState v-else-if="error" :mensaje="error" />
-        <p class="games-view__empty-state" v-else-if="juegos.length === 0">
-            No hay resultados para tu busqueda.
-        </p>
         <ul class="games-view__list" v-else>
             <li class="games-view__item" v-for="juego in juegos" :key="juego.id">
                 <GameCard :game="juego" />
             </li>
         </ul>
-        <div class="games-view__pagination">
-            <button 
-                class="games-view__page-button" 
-                @click="prevPage" 
-                :disabled="currentPage === 1">
-                Anterior
-            </button>
-            
-            <span class="games-view__page-indicator">Página {{ currentPage }}</span>
-            
-            <button 
-                class="games-view__page-button" 
-                @click="nextPage">
-                Siguiente
-            </button>
-        </div>
+        <LoadingState v-if="cargando" mensaje="Cargando juegos..." />
+        <ErrorState v-else-if="error" :mensaje="error" />
+        <p class="games-view__empty-state" v-else-if="juegos.length === 0">
+            No hay resultados para tu busqueda.
+        </p>
+            <span ref="visorFinal" class="games-view__page-indicator"></span>
     </section>
 </template>
 
