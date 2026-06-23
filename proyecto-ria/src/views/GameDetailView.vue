@@ -59,6 +59,14 @@
         return favoritoStore.isFavorito(game.value.id)
     })
 
+    const estrellas = computed(() => {
+            const puntos = Math.round(game.value.rating);
+
+        const vacias = 5 - puntos;
+
+        return '★'.repeat(puntos) + '☆'.repeat(vacias);
+    })
+
     function mostrarSiguiente(){
         const indiceActual = screenshots.value.findIndex(function (shot) {
             return shot.id === imagenSeleccionada.value.id
@@ -150,7 +158,7 @@
                     Sin descripción
                 </div>
                 
-                <p class="game-detail__rating">Calificación: {{ game.rating }}</p>
+                <p class="game-detail__rating">Calificación: <span class="game-card__stars">{{ estrellas }}</span></p>
                 <p class="game-detail__released">Lanzamiento: {{ game.released }}</p>
                 <p class="game-detail__platforms">Plataformas: {{ platformNames}}</p>
                 <p class="game-detail__genres">Géneros: {{ genreNames }}</p>
@@ -345,6 +353,11 @@
     background-color: var(--color-accent-hover);
 }
 
+.game-card__stars {
+  color: #f1c40f;
+  font-size: 1.2rem; 
+  letter-spacing: 2px; 
+}
 
 @media (max-width: 768px) {
   .game-detail__content {

@@ -28,6 +28,14 @@ function handleFavoriteClick() {
     favoritoStore.marcarDesmarcarFavorito(props.game)
   }
 }
+
+const estrellas = computed(() => {
+  const puntos = Math.round(props.game.rating);
+
+  const vacias = 5 - puntos;
+
+  return '★'.repeat(puntos) + '☆'.repeat(vacias);
+})
 </script>
 
 <template>
@@ -43,7 +51,7 @@ function handleFavoriteClick() {
         <div v-else class="game-card__placeholder">
             Sin imagen
         </div>
-        <p class="game-card__rating">Calificación: {{ game.rating }}</p>
+        <p class="game-card__rating">Calificación: <span class="game-card__stars">{{ estrellas }}</span></p>
         <p class="game-card__released">Lanzamiento: {{ game.released }}</p>
         </RouterLink>
         <button type="button" @click="handleFavoriteClick" class="game-card__favorite-button" :class="{ 'game-card__favorite-button--active': esJuegoFavorito }">
@@ -112,4 +120,9 @@ function handleFavoriteClick() {
   transition: var(--transition-fast);
 }
 
+.game-card__stars {
+  color: #f1c40f;
+  font-size: 1.2rem; 
+  letter-spacing: 2px; 
+}
 </style>
