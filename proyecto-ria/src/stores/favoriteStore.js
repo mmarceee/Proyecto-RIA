@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
-import { useLocalStorage } from '@/composables/useLocalStorage'
-import { useAuthStore } from '@/stores/authStore' // 1. Importamos el store de autenticación
+import { useAuthStore } from '@/stores/authStore' 
+import { guardarFavoritoDB, obtenerFavoritosUsuarioDB, eliminarFavoritoDB } from '@/services/db'
 
 export const useFavoriteStore = defineStore('favoritos', () => {
   const authStore = useAuthStore()
@@ -9,21 +9,17 @@ export const useFavoriteStore = defineStore('favoritos', () => {
   // Referencia reactiva interna para los favoritos
   const favoritos = ref([])
   
-  // Guardamos la referencia al almacenamiento local activo en memoria
-  let storageActivo = null
-
-  // 2. Función dinámica para cargar los favoritos del usuario actual
-  function cargarFavoritosUsuario() {
-    // Si no hay sesión iniciada, los favoritos se guardan bajo el perfil de 'invitado'
-    const usuarioActivo = authStore.currentUser || 'invitado'
-    const KEY_FAVORITOS = `juegos-favoritos-${usuarioActivo}`
-    
-    // Obtenemos el helper de localStorage con la clave específica
-    storageActivo = useLocalStorage(KEY_FAVORITOS, [])
-    
-    // Sincronizamos la referencia reactiva
-    favoritos.value = storageActivo.data.value
+  //  Función dinámica para cargar los favoritos del usuario actual
+async function cargarFavoritosUsuario() {
+  const usuarioActivo = authStore.currentUser || 'invitado'
+  try {
+    // Trae los datos de IndexedDB en vez de localStorage
+    const favoritosDB = await obtenerFavoritosUsuarioDB(usuarioActivo)
+    favoritos.value = favoritosDB
+  } catch (error) {
+    console.error("Error al cargar favoritos de IndexedDB", error)
   }
+}
 
   // Inicializar al cargar el store por primera vez
   cargarFavoritosUsuario()
@@ -37,32 +33,36 @@ export const useFavoriteStore = defineStore('favoritos', () => {
     }
   )
 
-  // 4. Métodos del Store (adaptados al almacenamiento activo dinámico)
-  function agregarFavorito(game) {
-    if (isFavorito(game.id)) {
-      return
-    }
-    
-    const juegoFavorito = {
-      id: game.id,
-      name: game.name,
-      background_image: game.background_image,
-      rating: game.rating,
-      released: game.released,
-    }
-
-    favoritos.value.push(juegoFavorito)
-    if (storageActivo) {
-      storageActivo.save(favoritos.value)
-    }
-  }
+ async function agregarFavorito(game) {
+  if (isFavorito(game.id)) return
   
-  function quitarFavorito(gameId) {
-    favoritos.value = favoritos.value.filter(favorito => favorito.id !== gameId)
-    if (storageActivo) {
-      storageActivo.save(favoritos.value)
-    }
+  const usuarioActivo = authStore.currentUser || 'invitado'
+  const juegoFavorito = {
+    id: game.id,
+    name: game.name,
+    background_image: game.background_image,
+    rating: game.rating,
+    released: game.released,
   }
+  // 1. Guardamos localmente en la reactividad
+  favoritos.value.push(juegoFavorito)
+  
+  // 2. Guardamos de forma asíncrona en IndexedDB
+  try {
+    await guardarFavoritoDB(juegoFavorito, usuarioActivo)
+  } catch (error) {
+    console.error("No se pudo guardar en IndexedDB", error)
+  }
+}
+async function quitarFavorito(gameId) {
+  favoritos.value = favoritos.value.filter(favorito => favorito.id !== gameId)
+  
+  try {
+    await eliminarFavoritoDB(gameId)
+  } catch (error) {
+    console.error("No se pudo eliminar de IndexedDB", error)
+  }
+}
 
   function isFavorito(gameId) {
     return favoritos.value.some(favorito => favorito.id === gameId)
