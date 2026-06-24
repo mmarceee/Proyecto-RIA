@@ -2,6 +2,7 @@
 const apiKey = import.meta.env.VITE_RAWG_API_KEY;
 const baseUrl = import.meta.env.VITE_RAWG_API_BASE_URL || 'https://api.rawg.io/api';
 const pageSize = import.meta.env.VITE_RAWG_PAGE_SIZE || 21;
+import { guardarEnCacheDB, obtenerDeCacheDB } from './db.js';
 
 export async function getGames (search = '', page = 1, platforms = '', genres = '') {
     
@@ -12,6 +13,13 @@ export async function getGames (search = '', page = 1, platforms = '', genres = 
     url.searchParams.set('key', apiKey)
     url.searchParams.set('page_size', pageSize)
     url.searchParams.set('page', page)
+
+    const claveCache = `games_${search}_${platforms}_${genres}_${page}`;
+    const datosCacheados = await obtenerDeCacheDB(claveCache);
+
+    if (datosCacheados) {
+        return datosCacheados;
+    }
 
     if(search){
         url.searchParams.set('search', search)
@@ -31,6 +39,7 @@ export async function getGames (search = '', page = 1, platforms = '', genres = 
     }
 
     const data = await response.json();
+    await guardarEnCacheDB(claveCache, data.results);
     return data.results;
 }
 
