@@ -1,7 +1,7 @@
 // src/services/db.js
 
 const DB_NAME = 'ChickenThiefGamesDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'favoritos';
 
 export function inicializarDB() {
@@ -11,13 +11,16 @@ export function inicializarDB() {
 
     // Este evento solo se dispara si la base de datos no existe o cambia de versión
     request.onupgradeneeded = (event) => {
+      
       const db = event.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        // Creamos el almacén usando el campo 'id' de los juegos como clave primaria
-        // Y añadimos un índice para poder filtrar por 'usuario' si fuese necesario
-        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-        store.createIndex('usuario', 'usuario', { unique: false });
+      
+      if (db.objectStoreNames.contains(STORE_NAME)) {
+        db.deleteObjectStore(STORE_NAME);
       }
+  
+      const store = db.createObjectStore(STORE_NAME, { keyPath: 'favoritoId' });
+    
+      store.createIndex('usuario', 'usuario', { unique: false });
     };
 
     request.onsuccess = (event) => {
@@ -37,10 +40,13 @@ export async function guardarFavoritoDB(juego, usuarioId) {
     const transaction = db.transaction(STORE_NAME, 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
     
-    // Añadimos el ID del usuario al objeto del juego para saber de quién es
-    const registro = { ...juego, usuario: usuarioId };
+    const registro = { 
+      ...juego, 
+      usuario: usuarioId,
+      favoritoId: `${usuarioId}-${juego.id}`
+    };
     
-    const request = store.put(registro); // .put añade o sobreescribe si ya existe
+    const request = store.put(registro); 
     request.onsuccess = () => resolve(true);
     request.onerror = (e) => reject(e.target.error);
   });
@@ -60,13 +66,16 @@ export async function obtenerFavoritosUsuarioDB(usuarioId) {
   });
 }
 // Eliminar un favorito por su ID
-export async function eliminarFavoritoDB(juegoId) {
+export async function eliminarFavoritoDB(juegoId, usuarioId) {
   const db = await inicializarDB();
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(STORE_NAME, 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
     
-    const request = store.delete(juegoId);
+    const favoritoId = `${usuarioId}-${juegoId}`;
+    
+    const request = store.delete(favoritoId);
+    
     request.onsuccess = () => resolve(true);
     request.onerror = (e) => reject(e.target.error);
   });
