@@ -1,8 +1,9 @@
 // src/services/db.js
 
 const DB_NAME = 'ChickenThiefGamesDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'favoritos';
+const CACHE_STORE_NAME = 'cache_juegos';
 
 export function inicializarDB() {
   return new Promise((resolve, reject) => {
@@ -17,6 +18,10 @@ export function inicializarDB() {
         // Y añadimos un índice para poder filtrar por 'usuario' si fuese necesario
         const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
         store.createIndex('usuario', 'usuario', { unique: false });
+      }
+      if (!db.objectStoreNames.contains(CACHE_STORE_NAME)) {
+        // Creamos un almacén para cachear los juegos descargados
+        db.createObjectStore(CACHE_STORE_NAME, { keyPath: 'id' });
       }
     };
 
@@ -68,6 +73,40 @@ export async function eliminarFavoritoDB(juegoId) {
     
     const request = store.delete(juegoId);
     request.onsuccess = () => resolve(true);
+    request.onerror = (e) => reject(e.target.error);
+  });
+}
+
+// Guardar datos en la cache de juegos descargados
+export async function guardarEnCacheDB(claveBusqueda, datos) {
+  const db = await inicializarDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(CACHE_STORE_NAME, 'readwrite');
+    const store = transaction.objectStore(CACHE_STORE_NAME);
+    
+    // Guardamos los datos con la clave de búsqueda como ID
+    const registro = { id: claveBusqueda, datos };
+    
+    const request = store.put(registro);
+    request.onsuccess = () => resolve(true);
+    request.onerror = (e) => reject(e.target.error);
+  });
+}
+
+export async function obtenerDeCacheDB(claveBusqueda) {
+  const db = await inicializarDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(CACHE_STORE_NAME, 'readonly');
+    const store = transaction.objectStore(CACHE_STORE_NAME);
+    
+    const request = store.get(claveBusqueda);
+    request.onsuccess = (e) => {
+      if (e.target.result) {
+        resolve(e.target.result.datos); // Retornamos solo los datos
+      } else {
+        resolve(null); // No hay datos en cache para esa clave
+      }
+    };
     request.onerror = (e) => reject(e.target.error);
   });
 }

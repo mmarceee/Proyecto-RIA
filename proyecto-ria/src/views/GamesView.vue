@@ -132,7 +132,7 @@
         currentPage.value = 1;
         savePage('1');
         showSearchHistory.value = false;
-        fetchCurrentGames();
+        //fetchCurrentGames();
     }
 
     function handleFilterChange() {
