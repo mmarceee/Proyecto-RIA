@@ -6,7 +6,6 @@ const HomeView = () => import('@/views/HomeView.vue')
 const GamesView = () => import('@/views/GamesView.vue')
 const GameDetailView = () => import('@/views/GameDetailView.vue')
 const FavoritesView = () => import('@/views/FavoritesView.vue')
-const SettingsView = () => import('@/views/SettingsView.vue')
 const ProfileView = () => import('@/views/ProfileView.vue')
 
 // 2. Importación de las nuevas vistas de usuario
@@ -38,13 +37,6 @@ const routes = [
     component: FavoritesView,
     // 3. Agregamos 'requiresAuth: true' para proteger esta ruta
     meta: { title: 'Favoritos', requiresAuth: true },
-  },
-  {
-    path: '/settings',
-    name: 'settings',
-    component: SettingsView,
-    // 3. Agregamos 'requiresAuth: true' para proteger esta ruta
-    meta: { title: 'Configuración', requiresAuth: true },
   },
   {
     path: '/perfil',
