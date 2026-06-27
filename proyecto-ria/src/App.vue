@@ -59,7 +59,6 @@ function handleLogout() {
       <!-- Enlaces visibles solo si está autenticado -->
       <template v-if="authStore.isAuthenticated">
         <RouterLink class="app-header__link" to="/favorites"> Favoritos </RouterLink>
-        <RouterLink class="app-header__link" to="/settings"> Configuración </RouterLink>
         
         <!-- Bloque de información de usuario y botón de logout -->
         <div class="app-header__user-info">

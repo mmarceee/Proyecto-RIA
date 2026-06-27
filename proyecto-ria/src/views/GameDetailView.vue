@@ -86,8 +86,18 @@
     }
 
     function manejarTeclado(event) {
+        if (!imagenSeleccionada.value) {
+            return
+        }
+
         if (event.key === 'Escape') {
             imagenSeleccionada.value = null
+        } else if (event.key === 'ArrowRight') {
+            event.preventDefault()
+            mostrarSiguiente()
+        } else if (event.key === 'ArrowLeft') {
+            event.preventDefault()
+            mostrarAnterior()
         }
     }
 
