@@ -7,6 +7,7 @@ const GamesView = () => import('@/views/GamesView.vue')
 const GameDetailView = () => import('@/views/GameDetailView.vue')
 const FavoritesView = () => import('@/views/FavoritesView.vue')
 const SettingsView = () => import('@/views/SettingsView.vue')
+const ProfileView = () => import('@/views/ProfileView.vue')
 
 // 2. Importación de las nuevas vistas de usuario
 const LoginView = () => import('@/views/LoginView.vue')
@@ -44,6 +45,12 @@ const routes = [
     component: SettingsView,
     // 3. Agregamos 'requiresAuth: true' para proteger esta ruta
     meta: { title: 'Configuración', requiresAuth: true },
+  },
+  {
+    path: '/perfil',
+    name: 'profile',
+    component: ProfileView,
+    meta: { title: 'Mi perfil', requiresAuth: true },
   },
   // 4. Registramos las rutas de Login y Registro
   {
