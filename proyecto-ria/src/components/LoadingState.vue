@@ -1,7 +1,7 @@
 <script setup>
 
     defineProps({
-        message:{
+        mensaje:{
             type: String,
             default: 'Cargando...'
         },
@@ -12,7 +12,7 @@
 
 <template>
     <div class="loading-state">
-        <p class="loading-state__message">{{ message }}</p>
+        <p class="loading-state__mensaje">{{ mensaje }}</p>
     </div>
 </template>
 

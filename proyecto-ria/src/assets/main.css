@@ -1,0 +1,458 @@
+/* Variables de Diseño CSS */
+:root {
+  /* Tema Oscuro por Defecto (Estética Gaming / ) */
+  --color-bg-primary: #1e2025;
+  --color-bg-secondary: #272930;
+  --color-bg-tertiary: #191a1e;
+  
+  --color-text-primary: #f5f6f8;
+  --color-text-secondary: #cdd0d8;
+  --color-text-muted: #888b97;
+  
+  /* Acento Naranja */
+  --color-accent: #e05a47;
+  --color-accent-hover: #f27254;
+  --color-accent-rgb: 224, 90, 71;
+  
+  /* Cabecera y Navegación */
+  --color-header-bg: #272930;
+  --color-header-border: #32353e;
+  --color-header-text: #f5f6f8;
+  --color-header-hover-bg: #1e2025;
+  
+  /* Pie de Página */
+  --color-footer-bg: #191a1e;
+  --color-footer-text: #cdd0d8;
+  
+  /* Componentes, Bordes y Sombras */
+  --color-border: #32353e;
+  --color-card-bg: #272930;
+  --color-card-shadow: rgba(0, 0, 0, 0.3);
+  --color-card-hover-shadow: rgba(0, 0, 0, 0.5);
+  
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 16px;
+  
+  /* Fuentes */
+  --font-title: 'Montserrat', sans-serif;
+  --font-body: 'Source Sans 3', sans-serif;
+  
+  /* Transiciones */
+  --transition-fast: all 0.2s ease;
+  --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.5s ease;
+}
+
+/* Modificador para Tema Claro */
+body.theme-light {
+  --color-bg-primary: #f5f6f8;
+  --color-bg-secondary: #ffffff;
+  --color-bg-tertiary: #e6e8eb;
+  
+  --color-text-primary: #272930;
+  --color-text-secondary: #4a4d55;
+  --color-text-muted: #787b85;
+  
+  /* Mantenemos la cabecera oscura para preservar el estilo elegante de Escape Velocity */
+  --color-header-bg: #272930;
+  --color-header-border: #1e2025;
+  --color-header-text: #f5f6f8;
+  --color-header-hover-bg: #1e2025;
+  
+  --color-footer-bg: #272930;
+  --color-footer-text: #cdd0d8;
+  
+  --color-border: #dbdee2;
+  --color-card-bg: #ffffff;
+  --color-card-shadow: rgba(0, 0, 0, 0.05);
+  --color-card-hover-shadow: rgba(0, 0, 0, 0.12);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Reset Moderno */
+/* -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+ul, ol {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Estructura y Componentes Globales del Layout */
+/* -------------------------------------------------------------------------- */
+
+/* Cabecera Principal */
+.app-header {
+  background-color: var(--color-header-bg);
+  border-bottom: 3px solid var(--color-accent);
+  padding: 2.5rem 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: var(--transition-normal);
+}
+
+/* Interruptor de Tema (Sol y Luna deslizante) */
+.theme-toggle {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  width: 60px;
+  height: 30px;
+  background-color: var(--color-bg-primary);
+  border: 2px solid var(--color-border);
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  overflow: hidden;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle__icon {
+  font-size: 0.95rem;
+  user-select: none;
+  z-index: 1;
+  transition: var(--transition-fast);
+}
+
+.theme-toggle__knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  transition: var(--transition-normal);
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Desplazamiento del botón al estar en tema claro */
+.theme-toggle--light .theme-toggle__knob {
+  left: 32px;
+  background-color: #f39c12;
+}
+
+/* Hover en el switch */
+.theme-toggle:hover {
+  border-color: var(--color-accent);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3), 0 0 8px rgba(224, 90, 71, 0.2);
+}
+
+/* Contenedor del Logo (Estilo Escape Velocity) */
+.app-header__brand {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-header__logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.app-header__logo-img {
+  height: 75px;
+  width: auto;
+  object-fit: contain;
+}
+
+.app-header__logo-text {
+  font-family: var(--font-title);
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.app-header__logo-text span {
+  color: var(--color-accent);
+}
+
+.app-header__logo-sub {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+/* Navegación */
+.app-header__nav {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.app-header__link {
+  font-family: var(--font-title);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.6rem 1.2rem;
+  color: var(--color-header-text);
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.app-header__link:hover {
+  background-color: var(--color-header-hover-bg);
+  color: var(--color-accent);
+  border-color: rgba(224, 90, 71, 0.3);
+}
+
+.app-header__link.router-link-active {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+/* Contenedor de la Vista Principal */
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem 1.5rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Pie de Página (Estilo Escape Velocity) */
+.app-footer {
+  background-color: var(--color-footer-bg);
+  color: var(--color-footer-text);
+  padding: 3rem 1.5rem 2rem;
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.app-footer__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.app-footer__links {
+  display: flex;
+  gap: 1.5rem;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.app-footer__link:hover {
+  color: var(--color-accent);
+}
+
+.app-footer__copyright {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
+  padding-top: 1.5rem;
+}
+
+.app-footer__copyright a {
+  color: var(--color-text-secondary);
+}
+
+.app-footer__copyright a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Componentes Comunes Utilizables (BEM) */
+/* -------------------------------------------------------------------------- */
+
+/* Títulos de sección estilo Escape Velocity */
+.section-title {
+  position: relative;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-border);
+  z-index: 1;
+}
+
+.section-title__text {
+  font-family: var(--font-title);
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  padding: 0.5rem 1.5rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: background-color var(--transition-normal);
+}
+
+/* Botones Comunes */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-title);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.8rem 1.6rem;
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-normal);
+}
+
+.btn--primary {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+.btn--primary:hover {
+  background-color: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(224, 90, 71, 0.3);
+}
+
+.btn--secondary {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.btn--secondary:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Animaciones */
+/* -------------------------------------------------------------------------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Media Queries para Cabecera */
+@media (max-width: 768px) {
+  .app-header {
+    gap: 0.2rem;
+    padding: 0 0.2rem 0.5rem;
+  }
+  .app-header__logo-text {
+    font-size: 1.5rem;
+  }
+  .app-header__logo-img{
+    height: 55px;
+  }
+  .app-header__link {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  .app-header__logo-container{
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+}

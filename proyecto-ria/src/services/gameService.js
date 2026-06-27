@@ -1,9 +1,10 @@
 
 const apiKey = import.meta.env.VITE_RAWG_API_KEY;
 const baseUrl = import.meta.env.VITE_RAWG_API_BASE_URL || 'https://api.rawg.io/api';
-const pageSize = import.meta.env.VITE_RAWG_PAGE_SIZE || 20;
+const pageSize = import.meta.env.VITE_RAWG_PAGE_SIZE || 21;
+import { guardarEnCacheDB, obtenerDeCacheDB } from './db.js';
 
-export async function getGames (search = '', page = 1) {
+export async function getGames (search = '', page = 1, platforms = '', genres = '') {
     
     validarApiKey();
     
@@ -13,8 +14,23 @@ export async function getGames (search = '', page = 1) {
     url.searchParams.set('page_size', pageSize)
     url.searchParams.set('page', page)
 
+    const claveCache = `games_${search}_${platforms}_${genres}_${page}`;
+    const datosCacheados = await obtenerDeCacheDB(claveCache);
+
+    if (datosCacheados) {
+        return datosCacheados;
+    }
+
     if(search){
         url.searchParams.set('search', search)
+    }
+
+    if(platforms){
+        url.searchParams.set('platforms', platforms)
+    }
+
+    if(genres){
+        url.searchParams.set('genres', genres)
     }
 
     const response = await fetch(url);
@@ -23,6 +39,7 @@ export async function getGames (search = '', page = 1) {
     }
 
     const data = await response.json();
+    await guardarEnCacheDB(claveCache, data.results);
     return data.results;
 }
 
@@ -51,4 +68,25 @@ function validarApiKey(){
     if (!apiKey) {
         throw new Error('RAWG API key no está definida. Por favor setea VITE_RAWG_API_KEY en tu archivo .env.');
     }
+}
+
+export async function getGameScreenshots (id) {
+    
+    if(!id){
+        throw new Error('El id del juego es obligariorio')
+    }
+
+    validarApiKey();
+
+    const url = new URL(`${baseUrl}/games/${id}/screenshots`)
+    url.searchParams.set('key', apiKey)
+
+    const response = await fetch(url)
+
+    if(!response.ok) {
+        throw new Error('Error en la respuesta de la API: ' + response.status)
+    }
+
+    const data = await response.json();
+    return data.results;
 }
