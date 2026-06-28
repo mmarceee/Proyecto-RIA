@@ -91,6 +91,47 @@ export const useAuthStore = defineStore('auth', () => {
     return true
   }
 
+  function actualizarPerfil(email, nuevaPassword = '') {
+    const emailNormalizado = email.trim()
+
+    if (!emailNormalizado) {
+      throw new Error('El correo electrónico es obligatorio.')
+    }
+
+    const indiceUsuario = usuarios.value.findIndex(
+      usuario => usuario.username === currentUser.value
+    )
+
+    if (indiceUsuario === -1) {
+      throw new Error('No se encontró el usuario activo.')
+    }
+
+    const emailEnUso = usuarios.value.some(
+      (usuario, indice) =>
+        indice !== indiceUsuario &&
+        usuario.email.toLowerCase() === emailNormalizado.toLowerCase()
+    )
+
+    if (emailEnUso) {
+      throw new Error('El correo electrónico ya está registrado.')
+    }
+
+    if (nuevaPassword && nuevaPassword.length < 4) {
+      throw new Error('La contraseña debe tener al menos 4 caracteres.')
+    }
+
+    const usuarioActual = usuarios.value[indiceUsuario]
+
+    usuarios.value[indiceUsuario] = {
+      ...usuarioActual,
+      email: emailNormalizado,
+      ...(nuevaPassword ? { password: nuevaPassword } : {})
+    }
+
+    usuariosStorage.save([...usuarios.value])
+    return true
+  }
+
   // 7. Acciones: Cerrar Sesión
   function cerrarSesion() {
     currentUser.value = ''
@@ -104,6 +145,7 @@ export const useAuthStore = defineStore('auth', () => {
     currentUserDetails,
     registrarUsuario,
     iniciarSesion,
-    cerrarSesion
+    actualizarPerfil,
+    cerrarSesion,
   }
 })

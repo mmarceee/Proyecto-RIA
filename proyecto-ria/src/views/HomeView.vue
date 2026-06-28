@@ -15,7 +15,8 @@
   onMounted(async () => {
     try {
       loading.value = true
-      const games = await getGames()
+      const pagina = await getGames()
+      const games = pagina.results
       if (games && games.length > 0) {
         const barajaDeJuegos = [...games].sort(() => 0.5 - Math.random())
         juegosRecomendados.value = barajaDeJuegos.slice(0, 10)

@@ -72,12 +72,17 @@ function handleLogout() {
       <!-- Enlaces visibles solo si está autenticado -->
       <template v-if="authStore.isAuthenticated">
         <RouterLink class="app-header__link" to="/favorites"> Favoritos </RouterLink>
-        <RouterLink class="app-header__link" to="/settings"> Configuración </RouterLink>
         
         <!-- Bloque de información de usuario y botón de logout -->
         <div class="app-header__user-info">
           <span class="app-header__user-greeting">
-            Hola, <strong>{{ authStore.currentUser }}</strong>
+            Hola,
+            <RouterLink
+              :to="{ name: 'profile' }"
+              class="app-header__profile-link"
+            >
+              {{ authStore.currentUser }}
+            </RouterLink>
           </span>
           <button @click="handleLogout" class="app-header__logout-btn" type="button">
             Cerrar Sesión
@@ -124,8 +129,21 @@ function handleLogout() {
   color: var(--color-text-secondary);
 }
 
-.app-header__user-greeting strong {
+.app-header__profile-link {
+  padding: 0.25rem 0.5rem;
   color: var(--color-accent);
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-fast);
+}
+
+.app-header__profile-link:hover,
+.app-header__profile-link:focus-visible {
+  color: #ffffff;
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 .app-header__logout-btn {

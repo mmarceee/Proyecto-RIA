@@ -57,8 +57,10 @@ async function cargarFavoritosUsuario() {
 async function quitarFavorito(gameId) {
   favoritos.value = favoritos.value.filter(favorito => favorito.id !== gameId)
   
+  const usuarioActivo = authStore.currentUser || 'invitado'
+  
   try {
-    await eliminarFavoritoDB(gameId)
+    await eliminarFavoritoDB(gameId, usuarioActivo)
   } catch (error) {
     console.error("No se pudo eliminar de IndexedDB", error)
   }
