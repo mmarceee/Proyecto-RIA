@@ -192,7 +192,7 @@
             <select v-model="selectedGenres" @change="handleFilterChange" class="games-view__filter-select">
                 <option value="">Todos los géneros</option>
                 <option value="action">Acción</option>
-                <option value="role-playing-games">RPG</option>
+                <option value="role-playing-games-rpg">RPG</option>
                 <option value="shooter">Shooter</option>
                 <option value="adventure">Aventura</option>
             </select>
