@@ -1,13 +1,14 @@
 <script setup>
 import { RouterLink, RouterView, useRouter } from 'vue-router'
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useSettingsStore } from '@/stores/settingsStore'
 import { useAuthStore } from '@/stores/authStore' // 1. Importamos el store de autenticación
 import logoHead from '@/assets/logo-head.png'
 
 const settingsStore = useSettingsStore()
-const authStore = useAuthStore() // 2. Instanciamos el store
+const authStore = useAuthStore() // Instanciamos el store
 const router = useRouter()
+const hayConexion = ref(navigator.onLine) 
 
 // Alternar entre tema claro y oscuro
 function toggleTheme() {
@@ -18,6 +19,14 @@ function toggleTheme() {
 // Aplicar el tema configurado al iniciar la aplicación
 onMounted(() => {
   settingsStore.applyTheme(settingsStore.theme)
+
+  window.addEventListener('offline', () => {
+    hayConexion.value = false;
+  })
+
+  window.addEventListener('online', () => {
+    hayConexion.value = true;
+  })
 })
 
 // 3. Función para cerrar sesión y redirigir
@@ -29,6 +38,10 @@ function handleLogout() {
 
 <template>
   <header class="app-header">
+
+    <div v-if="!hayConexion" class="app-header__conexion">
+      <span class="app-header__text">No tienes conexión a internet! Mostrando datos guardados.</span>
+    </div>
     <!-- Interruptor de Tema Deslizante (Sol y Luna) -->
     <button 
       class="theme-toggle" 
@@ -41,7 +54,7 @@ function handleLogout() {
       <span class="theme-toggle__icon theme-toggle__icon--sun">☀️</span>
       <span class="theme-toggle__knob"></span>
     </button>
-
+    
     <div class="app-header__brand">
       <div class="app-header__logo-container">
         <img class="app-header__logo-img" :src="logoHead" alt="ChickenThief Games Logo" />
@@ -145,6 +158,38 @@ function handleLogout() {
   border-style: solid;
 }
 
+.app-header__conexion {
+  /* Usamos un rojo/coral intenso para que llame la atención pero no lastime a la vista */
+  background-color: #ff4757; 
+  color: #ffffff; /* Texto blanco puro para contraste perfecto */
+  text-align: center;
+  padding: 0.6rem 1rem;
+  font-family: var(--font-title, sans-serif);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius-sm);
+  
+  /* Hacemos que se pegue arriba de todo en la pantalla */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  
+  /* Le damos vida con una animación suave de entrada */
+  animation: deslizarAbajo 0.4s ease-out;
+}
+/* La animación que hace que el cartel baje desde arriba */
+@keyframes deslizarAbajo {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
 /* Adaptación responsive para pantallas pequeñas */
 @media (max-width: 768px) {
   .app-header__user-info {

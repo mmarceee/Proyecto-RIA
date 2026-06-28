@@ -85,7 +85,7 @@ export async function guardarEnCacheDB(claveBusqueda, datos) {
     const store = transaction.objectStore(CACHE_STORE_NAME);
     
     // Guardamos los datos con la clave de búsqueda como ID
-    const registro = { id: claveBusqueda, datos };
+    const registro = { id: claveBusqueda, datos, timestamp: Date.now() };
     
     const request = store.put(registro);
     request.onsuccess = () => resolve(true);
@@ -96,16 +96,25 @@ export async function guardarEnCacheDB(claveBusqueda, datos) {
 export async function obtenerDeCacheDB(claveBusqueda) {
   const db = await inicializarDB();
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(CACHE_STORE_NAME, 'readonly');
+    const transaction = db.transaction(CACHE_STORE_NAME, 'readonly'); 
     const store = transaction.objectStore(CACHE_STORE_NAME);
     
     const request = store.get(claveBusqueda);
+    
     request.onsuccess = (e) => {
-      if (e.target.result) {
-        resolve(e.target.result.datos); // Retornamos solo los datos
+      const registro = e.target.result;
+      if (registro) {
+      const TIEMPO_MAXIMO = 12 * 60 * 60 * 1000; // 12 horas 
+      const TIEMPO_ACTUAL = Date.now();
+      
+      if(TIEMPO_ACTUAL - registro.timestamp > TIEMPO_MAXIMO) {
+        resolve(null);
       } else {
-        resolve(null); // No hay datos en cache para esa clave
+        resolve(registro.datos); // Retornamos los datos si no están caducados
       }
+    } else {
+      resolve(null); // No hay datos en cache para esa clave
+    }
     };
     request.onerror = (e) => reject(e.target.error);
   });
