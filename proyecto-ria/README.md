@@ -57,6 +57,9 @@ npm run preview
   npm run lint
   ```
 
+## .env
+Para acceder a la informacion del **.env** solicitarla al equipo, por favor.
+
 ## Estructura del Proyecto
 
 - `src/assets/`: Imágenes y recursos estáticos.
