@@ -1,13 +1,14 @@
 <script setup>
 import { RouterLink, RouterView, useRouter } from 'vue-router'
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useSettingsStore } from '@/stores/settingsStore'
 import { useAuthStore } from '@/stores/authStore' // 1. Importamos el store de autenticación
 import logoHead from '@/assets/logo-head.png'
 
 const settingsStore = useSettingsStore()
-const authStore = useAuthStore() // 2. Instanciamos el store
+const authStore = useAuthStore() // Instanciamos el store
 const router = useRouter()
+const hayConexion = ref(navigator.onLine) 
 
 // Alternar entre tema claro y oscuro
 function toggleTheme() {
@@ -18,6 +19,14 @@ function toggleTheme() {
 // Aplicar el tema configurado al iniciar la aplicación
 onMounted(() => {
   settingsStore.applyTheme(settingsStore.theme)
+
+  window.addEventListener('offline', () => {
+    hayConexion.value = false;
+  })
+
+  window.addEventListener('online', () => {
+    hayConexion.value = true;
+  })
 })
 
 // 3. Función para cerrar sesión y redirigir
@@ -29,6 +38,10 @@ function handleLogout() {
 
 <template>
   <header class="app-header">
+
+    <div v-if="!hayConexion" class="app-header__conexion">
+      <span class="app-header__text">No tienes conexión a internet! Mostrando datos guardados.</span>
+    </div>
     <!-- Interruptor de Tema Deslizante (Sol y Luna) -->
     <button 
       class="theme-toggle" 
@@ -37,8 +50,20 @@ function handleLogout() {
       :aria-label="settingsStore.theme === 'theme-light' ? 'Activar modo oscuro' : 'Activar modo claro'"
       type="button"
     >
-      <span class="theme-toggle__icon theme-toggle__icon--moon">🌙</span>
-      <span class="theme-toggle__icon theme-toggle__icon--sun">☀️</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-toggle__icon theme-toggle__icon--moon">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+      </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-toggle__icon theme-toggle__icon--sun">
+        <circle cx="12" cy="12" r="4"></circle>
+        <path d="M12 2v2"></path>
+        <path d="M12 20v2"></path>
+        <path d="m4.93 4.93 1.41 1.41"></path>
+        <path d="m17.66 17.66 1.41 1.41"></path>
+        <path d="M2 12h2"></path>
+        <path d="M20 12h2"></path>
+        <path d="m6.34 17.66-1.41 1.41"></path>
+        <path d="m19.07 4.93-1.41 1.41"></path>
+      </svg>
       <span class="theme-toggle__knob"></span>
     </button>
 
@@ -113,7 +138,7 @@ function handleLogout() {
 .app-header__user-greeting {
   font-family: var(--font-body);
   font-size: 0.9rem;
-  color: var(--color-text-secondary);
+  color: var(--color-header-text);
 }
 
 .app-header__profile-link {
@@ -163,6 +188,38 @@ function handleLogout() {
   border-style: solid;
 }
 
+.app-header__conexion {
+  /* Usamos un rojo/coral intenso para que llame la atención pero no lastime a la vista */
+  background-color: #ff4757; 
+  color: #ffffff; /* Texto blanco puro para contraste perfecto */
+  text-align: center;
+  padding: 0.6rem 1rem;
+  font-family: var(--font-title, sans-serif);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius-sm);
+  
+  /* Hacemos que se pegue arriba de todo en la pantalla */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  
+  /* Le damos vida con una animación suave de entrada */
+  animation: deslizarAbajo 0.4s ease-out;
+}
+/* La animación que hace que el cartel baje desde arriba */
+@keyframes deslizarAbajo {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
 /* Adaptación responsive para pantallas pequeñas */
 @media (max-width: 768px) {
   .app-header__user-info {

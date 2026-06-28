@@ -17,6 +17,9 @@
     const juegos = ref([]);
     const cargando = ref(false);
     const error = ref(null);
+    const hayPaginaSiguiente = ref(false);
+    const hayPaginaAnterior = ref(false);
+    const totalResultados = ref(0);
 
 
     // 4. Modificamos las claves de sesión para que sean individuales por usuario
@@ -37,8 +40,24 @@
         error.value = null;
 
         try {
-            const games = await getGames(search.value, currentPage.value, selectedPlatforms.value, selectedGenres.value);
-            juegos.value = [...games].sort(() => Math.random() - 0.5); //spread operator crea un nuevo array copiando todos los elementos de games.
+            const pagina = await getGames(
+                search.value,
+                currentPage.value,
+                selectedPlatforms.value,
+                selectedGenres.value,
+            )
+
+            if (Array.isArray(pagina.results)) {
+                juegos.value = pagina.results.filter((juego) => { //limpia si hay algun juego null, creando array nuevo sin ese
+                    return juego?.id != null
+                })
+            } else {
+                juegos.value = []
+            }
+            totalResultados.value = pagina.count
+            hayPaginaSiguiente.value = Boolean(pagina.next)
+            hayPaginaAnterior.value = Boolean(pagina.previous)
+
         } catch (err) {
             error.value = 'Error al cargar los juegos';
             console.error(err);
@@ -132,7 +151,7 @@
         currentPage.value = 1;
         savePage('1');
         showSearchHistory.value = false;
-        //fetchCurrentGames();
+        fetchCurrentGames();
     }
 
     function handleFilterChange() {
@@ -226,7 +245,7 @@
             <button 
                 class="games-view__page-button" 
                 @click="prevPage" 
-                :disabled="currentPage === 1">
+                :disabled="!hayPaginaAnterior">
                 Anterior
             </button>
             
@@ -234,7 +253,8 @@
             
             <button 
                 class="games-view__page-button" 
-                @click="nextPage">
+                @click="nextPage"
+                :disabled="!hayPaginaSiguiente">
                 Siguiente
             </button>
         </div>
