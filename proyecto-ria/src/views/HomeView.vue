@@ -98,7 +98,7 @@
           <div class="home-feature-card">
             <div class="home-feature-card__icon">⭐</div>
             <h3 class="home-feature-card__title">Guardar favoritos</h3>
-            <p class="home-feature-card__desc">Agrega tus títulos preferidos a tu biblioteca personal con persistencia en tu navegador (localStorage).</p>
+            <p class="home-feature-card__desc">Agrega tus títulos preferidos a tu biblioteca personal con persistencia en tu navegador.</p>
           </div>
           <div class="home-feature-card">
             <div class="home-feature-card__icon">⚙️</div>
