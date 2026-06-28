@@ -14,7 +14,7 @@ export async function getGames (search = '', page = 1, platforms = '', genres = 
     url.searchParams.set('page_size', pageSize)
     url.searchParams.set('page', page)
 
-    const claveCache = `games_${search}_${platforms}_${genres}_${page}`;
+    const claveCache = `games_v2_${search}_${platforms}_${genres}_${page}` //para resolver problema de paginacion
     const datosCacheados = await obtenerDeCacheDB(claveCache);
 
     if (datosCacheados) {
@@ -38,9 +38,18 @@ export async function getGames (search = '', page = 1, platforms = '', genres = 
         throw new Error('Error en la respuesta de la API: ' + response.status);
     }
 
-    const data = await response.json();
-    await guardarEnCacheDB(claveCache, data.results);
-    return data.results;
+    const data = await response.json()
+
+    const pagina = {
+        results: data.results,
+        count: data.count,
+        next: data.next,
+        previous: data.previous,
+    }
+
+    await guardarEnCacheDB(claveCache, pagina)
+
+    return pagina
 }
 
 export async function getGameById (id) {

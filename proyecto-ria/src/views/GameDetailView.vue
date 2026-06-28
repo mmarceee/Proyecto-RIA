@@ -17,23 +17,38 @@
     const error = ref(null)
 
     const screenshots = ref([])
+    const errorGaleria = ref(null)
     const imagenSeleccionada = ref(null)
     let inicioToqueX = 0
 
     onMounted(async () => {
         const id = route.params.id
         window.addEventListener('keydown', manejarTeclado)
+
         try {
-            game.value = await getGameById(id)
-            screenshots.value = await getGameScreenshots(id)
+            const [detalleResult, galeriaResult] = await Promise.allSettled([
+                getGameById(id),
+                getGameScreenshots(id),
+            ])
+
+            if (detalleResult.status === 'rejected') {
+                throw detalleResult.reason
+            }
+
+            game.value = detalleResult.value
+
+            if (galeriaResult.status === 'fulfilled') {
+                screenshots.value = galeriaResult.value
+            } else {
+                screenshots.value = []
+                errorGaleria.value = 'No se pudo cargar la galería.'
+            }
         } catch (err) {
             error.value = 'Error al cargar los detalles del juego'
-            console.error(err)
         } finally {
             cargando.value = false
         }
     })
-
     onUnmounted(() => {
         window.removeEventListener('keydown', manejarTeclado)
     })
@@ -154,6 +169,9 @@
                     />
                 </div>
             </div>
+            <p v-else-if="errorGaleria" class="game-detail__gallery-error">
+                {{ errorGaleria }}
+            </p>
             </div>
             <div class="game-detail__info">
                 <h1 class="game-detail__title">Detalles del Juego</h1>
